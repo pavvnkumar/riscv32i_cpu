@@ -11,8 +11,12 @@ module decoder (
     output logic        alu_src,
 
     output logic        reg_write,
-    output logic        valid
-);
+    output logic        valid,
+
+    output logic mem_read,
+    output logic mem_write,
+    output logic mem_to_reg
+    );
 
     localparam logic [6:0] OPCODE_RTYPE = 7'b0110011;
 
@@ -38,6 +42,9 @@ module decoder (
         alu_src     = 1'b0;
         reg_write   = 1'b0;
         valid       = 1'b0;
+        mem_read   = 1'b0;
+        mem_write  = 1'b0;
+        mem_to_reg = 1'b0;
 
         if (instruction[6:0] == OPCODE_RTYPE) begin
 
@@ -207,7 +214,49 @@ module decoder (
 
         end
 
+        else if (instruction[6:0] == 7'b0000011) begin
+                
+            // LW
 
-    end
+            if (instruction[14:12] == 3'b010) begin
+            
+                alu_control = ALU_ADD;
+
+                immediate = {{20{instruction[31]}},
+                             instruction[31:20]};
+
+                alu_src   = 1'b1;
+                mem_read  = 1'b1;
+                mem_to_reg = 1'b1;
+                reg_write = 1'b1;
+                valid      = 1'b1;
+
+            end
+
+        end
+
+        else if (instruction[6:0] == 7'b0100011) begin
+        
+            // SW
+
+            if (instruction[14:12] == 3'b010) begin
+            
+                alu_control = ALU_ADD;
+
+                immediate = {{20{instruction[31]}},
+                             instruction[31:25],
+                             instruction[11:7]};
+
+                alu_src   = 1'b1;
+                mem_write = 1'b1;
+                reg_write = 1'b0;
+                valid     = 1'b1;
+
+            end
+
+        end
+
+
+            end
 
 endmodule

@@ -14,6 +14,10 @@ module tb_decoder;
     logic        reg_write;
     logic        valid;
 
+    logic mem_read;
+    logic mem_write;
+    logic mem_to_reg;
+
 
     decoder dut (
         .instruction (instruction),
@@ -24,6 +28,9 @@ module tb_decoder;
         .immediate   (immediate),
         .alu_src     (alu_src),
         .reg_write   (reg_write),
+        .mem_read    (mem_read),
+        .mem_write   (mem_write),
+        .mem_to_reg  (mem_to_reg),
         .valid       (valid)
     );
 
@@ -349,6 +356,90 @@ module tb_decoder;
             "SRA  : rs1=%0d rs2=%0d rd=%0d",
             rs1, rs2, rd
         );
+
+
+        // =================================
+        // LW x5, 8(x6)
+        // =================================
+
+        instruction = 32'h00832283;
+
+        #1;
+
+        if (rs1 !== 5'd6)
+            $fatal("LW rs1 failed: got %0d", rs1);
+
+        if (rd !== 5'd5)
+            $fatal("LW rd failed: got %0d", rd);
+
+        if (immediate !== 32'd8)
+            $fatal("LW immediate failed: got %0d", immediate);
+
+        if (alu_control !== ALU_ADD)
+            $fatal("LW ALU control failed");
+
+        if (alu_src !== 1'b1)
+            $fatal("LW alu_src failed");
+
+        if (mem_read !== 1'b1)
+            $fatal("LW mem_read failed");
+
+        if (mem_write !== 1'b0)
+            $fatal("LW mem_write failed");
+
+        if (mem_to_reg !== 1'b1)
+            $fatal("LW mem_to_reg failed");
+
+        if (reg_write !== 1'b1)
+            $fatal("LW reg_write failed");
+
+        if (valid !== 1'b1)
+            $fatal("LW valid failed");
+
+        $display("LW   : rs1=%0d imm=%0d rd=%0d",
+                 rs1, immediate, rd);
+
+        
+        // =================================
+        // SW x7, 12(x6)
+        // =================================
+
+        instruction = 32'h00732623;
+
+        #1;
+
+        if (rs1 !== 5'd6)
+            $fatal("SW rs1 failed: got %0d", rs1);
+
+        if (rs2 !== 5'd7)
+            $fatal("SW rs2 failed: got %0d", rs2);
+
+        if (immediate !== 32'd12)
+            $fatal("SW immediate failed: got %0d", immediate);
+
+        if (alu_control !== ALU_ADD)
+            $fatal("SW ALU control failed");
+
+        if (alu_src !== 1'b1)
+            $fatal("SW alu_src failed");
+
+        if (mem_read !== 1'b0)
+            $fatal("SW mem_read failed");
+
+        if (mem_write !== 1'b1)
+            $fatal("SW mem_write failed");
+
+        if (mem_to_reg !== 1'b0)
+            $fatal("SW mem_to_reg failed");
+
+        if (reg_write !== 1'b0)
+            $fatal("SW reg_write should be 0");
+
+        if (valid !== 1'b1)
+            $fatal("SW valid failed");
+
+        $display("SW   : rs1=%0d rs2=%0d imm=%0d",
+                 rs1, rs2, immediate);
 
 
         // =====================================================

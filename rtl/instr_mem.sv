@@ -75,6 +75,14 @@ module instr_mem (
             32'h00000040:
                 instruction = 32'h40735C33;
 
+            // SW x7, 12(x6)
+            32'h00000044:
+                instruction = 32'h00732623;
+            
+            // LW x5, 12(x6)
+            32'h00000048:
+                instruction = 32'h00C32283;
+
             // NOP
             default:
                 instruction = 32'h00000013;

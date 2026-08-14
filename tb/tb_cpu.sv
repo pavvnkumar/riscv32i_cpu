@@ -51,7 +51,7 @@ module tb_cpu;
         // Execute 14 instructions
         // ==========================
 
-        repeat (17) begin
+        repeat (19) begin
             @(posedge clk);
             #1;
         end
@@ -61,11 +61,11 @@ module tb_cpu;
         // Check results
         // ==========================
 
-        if (dut.register_file.registers[5] !== 32'd30)
-            $fatal(
-                "ADDI failed: x5 = %0d",
-                dut.register_file.registers[5]
-            );
+        // if (dut.register_file.registers[5] !== 32'd30)
+        //     $fatal(
+        //         "ADDI failed: x5 = %0d",
+        //         dut.register_file.registers[5]
+        //     );
 
 
         if (dut.register_file.registers[8] !== 32'd19)
@@ -190,6 +190,12 @@ module tb_cpu;
                 dut.register_file.registers[24]
             );
 
+        if (dut.register_file.registers[5] !== 32'd5)
+            $fatal(
+                "LW failed: x5 = %0d",
+                dut.register_file.registers[5]
+            );
+
 
         // ==========================
         // Passed
@@ -250,6 +256,9 @@ module tb_cpu;
 
         $display("x24 = %0d  (SRA)",
                  dut.register_file.registers[24]);
+        
+        $display("x5  = %0d  (LW)",
+                 dut.register_file.registers[5]);
 
         $display("================================");
         $display("");

@@ -28,10 +28,31 @@ module cpu (
     // ALU second operand
     logic [31:0] alu_b;
 
+    logic        mem_read;
+    logic        mem_write;
+    logic        mem_to_reg;
+
+    logic [31:0] memory_read_data;
+    logic [31:0] writeback_data;
+
+    // =========================================================
+    // ALU second operand
+    // =========================================================
+
     assign alu_b = alu_src ? immediate : read_data2;
 
+    // =========================================================
+    // Writeback MUX
+    // =========================================================
 
+    assign writeback_data =
+        mem_to_reg ? memory_read_data : alu_result;
+
+
+    // =========================================================
     // PC
+    // =========================================================
+
     pc pc_unit (
         .clk     (clk),
         .reset   (reset),
@@ -43,15 +64,20 @@ module cpu (
     // For now, always move to the next instruction
     assign next_pc = pc + 32'd4;
 
+    // =========================================================
+    // Instruction Memory
+    // =========================================================
 
-    // Instruction memory
     instr_mem instruction_memory (
         .addr        (pc),
         .instruction (instruction)
     );
 
 
+    // =========================================================
     // Decoder
+    // =========================================================
+
     decoder instruction_decoder (
         .instruction (instruction),
 
@@ -66,18 +92,24 @@ module cpu (
         .alu_src     (alu_src),
 
         .reg_write   (reg_write),
+        .mem_read   (mem_read),
+        .mem_write  (mem_write),
+        .mem_to_reg (mem_to_reg),
         .valid        (valid)
     );
 
 
+    // =========================================================
     // Register File
+    // =========================================================
+
     regfile register_file (
         .clk        (clk),
         .rs1        (rs1),
         .rs2        (rs2),
         .rd         (rd),
 
-        .write_data (alu_result),
+        .write_data (writeback_data),
         .write_en   (reg_write),
 
         .read_data1 (read_data1),
@@ -85,7 +117,10 @@ module cpu (
     );
 
 
+    // =========================================================
     // ALU
+    // =========================================================
+
     alu arithmetic_logic_unit (
         .a           (read_data1),
 
@@ -94,6 +129,19 @@ module cpu (
 
         .alu_control (alu_control),
         .result      (alu_result)
+    );
+
+    // =========================================================
+    // Data Memory
+    // =========================================================
+
+    data_mem data_memory (
+        .clk        (clk),
+        .mem_write  (mem_write),
+        .mem_read   (mem_read),
+        .addr       (alu_result),
+        .write_data (read_data2),
+        .read_data  (memory_read_data)
     );
 
 endmodule
