@@ -83,6 +83,56 @@ module instr_mem (
             32'h00000048:
                 instruction = 32'h00C32283;
 
+            // BEQ x6, x7, +8
+            32'h0000004C:
+                instruction = 32'h00730463;
+            
+            // BEQ x6, x6, +8
+            32'h00000050:
+                instruction = 32'h00630463;
+
+            // BNE x6, x7, +8
+            32'h00000058:
+                instruction = 32'h00731463;
+
+            // BLT x6, x7, +8
+            32'h00000060:
+                instruction = 32'h00734463;
+
+            // BLT x7, x6, +8
+            32'h00000064:
+                instruction = 32'h0063C463;
+
+            // BGE x7, x6, +8
+            // 5 >= 20 → not taken
+            32'h0000006C:
+                instruction = 32'h0063D463;
+
+            // BGE x6, x7, +8
+            // 20 >= 5 → taken
+            32'h00000070:
+                instruction = 32'h00735463;
+
+            // BLTU x20, x7, +8
+            // 0xFFFFFFFF < 5 → false unsigned
+            32'h00000078:
+                instruction = 32'h007A6463;
+            
+            // BLTU x7, x6, +8
+            // 5 < 20 → true unsigned
+            32'h0000007C:
+                instruction = 32'h0063E463;
+
+            // BGEU x20, x7, +8
+            // 0xFFFFFFFF >= 5 → true unsigned
+            32'h00000084:
+                instruction = 32'h007A7463;
+
+            // BGEU x7, x6, +8
+            // 5 >= 20 → false unsigned
+            32'h0000008C:
+                instruction = 32'h0063F463;
+
             // NOP
             default:
                 instruction = 32'h00000013;

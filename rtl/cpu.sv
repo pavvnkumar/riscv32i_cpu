@@ -35,6 +35,19 @@ module cpu (
     logic [31:0] memory_read_data;
     logic [31:0] writeback_data;
 
+    logic        branch;
+    logic [2:0]  branch_type;
+
+    logic        take_branch;
+    logic [31:0] branch_target;
+
+    localparam BR_BEQ  = 3'b000;
+    localparam BR_BNE  = 3'b001;
+    localparam BR_BLT  = 3'b010;
+    localparam BR_BGE  = 3'b011;
+    localparam BR_BLTU = 3'b100;
+    localparam BR_BGEU = 3'b101;
+
     // =========================================================
     // ALU second operand
     // =========================================================
@@ -62,7 +75,7 @@ module cpu (
 
 
     // For now, always move to the next instruction
-    assign next_pc = pc + 32'd4;
+    assign next_pc = take_branch ? branch_target : pc + 32'd4;
 
     // =========================================================
     // Instruction Memory
@@ -95,7 +108,22 @@ module cpu (
         .mem_read   (mem_read),
         .mem_write  (mem_write),
         .mem_to_reg (mem_to_reg),
-        .valid        (valid)
+        .valid        (valid),
+        .branch      (branch),
+        .branch_type (branch_type)
+    );
+
+    assign branch_target = pc + immediate;
+
+    assign take_branch =
+    branch &&
+    (
+        ((branch_type == BR_BEQ)  && (read_data1 == read_data2)) ||
+        ((branch_type == BR_BNE)  && (read_data1 != read_data2)) ||
+        ((branch_type == BR_BLT)  && ($signed(read_data1) < $signed(read_data2))) ||
+        ((branch_type == BR_BGE)  && ($signed(read_data1) >= $signed(read_data2))) ||
+        ((branch_type == BR_BLTU) && (read_data1 < read_data2)) ||
+        ((branch_type == BR_BGEU) && (read_data1 >= read_data2))
     );
 
 

@@ -15,7 +15,10 @@ module decoder (
 
     output logic mem_read,
     output logic mem_write,
-    output logic mem_to_reg
+    output logic mem_to_reg,
+
+    output logic        branch,
+    output logic [2:0]  branch_type
     );
 
     localparam logic [6:0] OPCODE_RTYPE = 7'b0110011;
@@ -31,6 +34,13 @@ module decoder (
     localparam logic [3:0] ALU_SRL = 4'b1000;
     localparam logic [3:0] ALU_SRA = 4'b1001;
 
+    localparam BR_BEQ  = 3'b000;
+    localparam BR_BNE  = 3'b001;
+    localparam BR_BLT  = 3'b010;
+    localparam BR_BGE  = 3'b011;
+    localparam BR_BLTU = 3'b100;
+    localparam BR_BGEU = 3'b101;
+
     always_comb begin
 
         rs1 = instruction[19:15];
@@ -45,6 +55,8 @@ module decoder (
         mem_read   = 1'b0;
         mem_write  = 1'b0;
         mem_to_reg = 1'b0;
+        branch      = 1'b0;
+        branch_type = 3'b000;
 
         if (instruction[6:0] == OPCODE_RTYPE) begin
 
@@ -252,6 +264,110 @@ module decoder (
                 reg_write = 1'b0;
                 valid     = 1'b1;
 
+            end
+
+        end
+
+        else if (instruction[6:0] == 7'b1100011) begin
+
+            // BEQ
+
+            if (instruction[14:12] == 3'b000) begin
+                        
+                immediate = {{19{instruction[31]}},
+                             instruction[31],
+                             instruction[7],
+                             instruction[30:25],
+                             instruction[11:8],
+                             1'b0};
+
+                branch      = 1'b1;
+                branch_type = BR_BEQ;
+                valid       = 1'b1;
+
+            end
+
+            // BNE
+            else if (instruction[14:12] == 3'b001) begin
+            
+                immediate = {{19{instruction[31]}},
+                             instruction[31],
+                             instruction[7],
+                             instruction[30:25],
+                             instruction[11:8],
+                             1'b0};
+
+                branch      = 1'b1;
+                branch_type = BR_BNE;
+                valid       = 1'b1;
+
+            end
+
+            // BLT
+
+            else if (instruction[14:12] == 3'b100) begin
+
+                immediate = {{19{instruction[31]}},
+                             instruction[31],
+                             instruction[7],
+                             instruction[30:25],
+                             instruction[11:8],
+                             1'b0};
+
+                branch      = 1'b1;
+                branch_type = BR_BLT;
+                valid       = 1'b1;
+
+            end
+
+            // BGE
+
+            else if (instruction[14:12] == 3'b101) begin
+
+                immediate = {{19{instruction[31]}},
+                             instruction[31],
+                             instruction[7],
+                             instruction[30:25],
+                             instruction[11:8],
+                             1'b0};
+
+                branch      = 1'b1;
+                branch_type = BR_BGE;
+                valid       = 1'b1;
+
+            end
+
+            else if (instruction[14:12] == 3'b110) begin
+                // BLTU
+
+                immediate = {{19{instruction[31]}},
+                             instruction[31],
+                             instruction[7],
+                             instruction[30:25],
+                             instruction[11:8],
+                             1'b0};
+
+                branch      = 1'b1;
+                branch_type = BR_BLTU;
+                valid       = 1'b1;
+
+            end
+
+            else if (instruction[14:12] == 3'b111) begin
+
+                // BGEU
+            
+                immediate = {{19{instruction[31]}},
+                             instruction[31],
+                             instruction[7],
+                             instruction[30:25],
+                             instruction[11:8],
+                             1'b0};
+            
+                branch      = 1'b1;
+                branch_type = BR_BGEU;
+                valid       = 1'b1;
+            
             end
 
         end

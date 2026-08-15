@@ -196,6 +196,224 @@ module tb_cpu;
                 dut.register_file.registers[5]
             );
 
+        // ==============================
+        // BEQ not-taken
+        // ==============================
+
+        @(posedge clk);
+        #1;
+
+        if (pc !== 32'h00000050)
+            $fatal(
+                "BEQ not-taken failed: PC = %h",
+                pc
+            );
+
+        $display(
+            "BEQ not taken: x6 != x7, PC = %h",
+            pc
+        );
+
+
+        // ==============================
+        // BEQ taken
+        // ==============================
+
+        @(posedge clk);
+        #1;
+
+        if (pc !== 32'h00000058)
+            $fatal(
+                "BEQ taken failed: PC = %h",
+                pc
+            );
+
+        $display(
+            "BEQ taken: x6 == x6, PC = %h",
+            pc
+        );
+
+
+        // ==============================
+        // BNE taken
+        // ==============================
+
+        @(posedge clk);
+        #1;
+
+        if (pc !== 32'h00000060)
+            $fatal(
+                "BNE taken failed: PC = %h",
+                pc
+            );
+
+        $display(
+            "BNE taken: x6 != x7, PC = %h",
+            pc
+        );
+
+        // ==============================
+        // BLT not-taken
+        // ==============================
+        
+        @(posedge clk);
+        #1;
+        
+        if (pc !== 32'h00000064)
+            $fatal(
+                "BLT not-taken failed: PC = %h",
+                pc
+            );
+        
+        $display(
+            "BLT not taken: x6 < x7 is false, PC = %h",
+            pc
+        );
+
+        // ==============================
+        // BLT taken
+        // ==============================
+
+        @(posedge clk);
+        #1;
+
+        if (pc !== 32'h0000006C)
+            $fatal(
+                "BLT taken failed: PC = %h",
+                pc
+            );
+
+        $display(
+            "BLT taken: x7 < x6 is true, PC = %h",
+            pc
+        );
+
+        // ==============================
+        // BGE not taken
+        // ==============================
+
+        @(posedge clk);
+        #1;
+
+        if (pc !== 32'h00000070)
+            $fatal(
+                "BGE not-taken failed: PC = %h",
+                pc
+            );
+
+        $display(
+            "BGE not taken: x7 >= x6 is false, PC = %h",
+            pc
+        );
+
+
+        // ==============================
+        // BGE taken
+        // ==============================
+
+        @(posedge clk);
+        #1;
+
+        if (pc !== 32'h00000078)
+            $fatal(
+                "BGE taken failed: PC = %h",
+                pc
+            );
+
+        $display(
+            "BGE taken: x6 >= x7 is true, PC = %h",
+            pc
+        );
+
+        // ==============================
+        // BLTU not taken
+        // ==============================
+
+        @(posedge clk);
+        #1;
+
+        if (pc !== 32'h0000007C)
+            $fatal(
+                "BLTU not-taken failed: PC = %h",
+                pc
+            );
+
+        $display(
+            "BLTU not taken: x20 < x7 is false, PC = %h",
+            pc
+        );
+
+
+        // ==============================
+        // BLTU taken
+        // ==============================
+
+        @(posedge clk);
+        #1;
+
+        if (pc !== 32'h00000084)
+            $fatal(
+                "BLTU taken failed: PC = %h",
+                pc
+            );
+
+        $display(
+            "BLTU taken: x7 < x6 is true, PC = %h",
+            pc
+        );
+
+        // ==============================
+        // BGEU taken
+        // ==============================
+
+        $display(
+                "BGEU CHECK: PC=%h INSTR=%h branch=%b type=%b rs1=%0d rs2=%0d rd1=%h rd2=%h take=%b",
+                pc,
+                dut.instruction,
+                dut.branch,
+                dut.branch_type,
+                dut.rs1,
+                dut.rs2,
+                dut.read_data1,
+                dut.read_data2,
+                dut.take_branch
+        );
+
+        @(posedge clk);
+        #1;
+
+        
+
+        if (pc !== 32'h0000008C)
+            $fatal(
+                "BGEU taken failed: PC = %h",
+                pc
+            );
+
+        $display(
+            "BGEU taken: x20 >= x7 is true, PC = %h",
+            pc
+        );
+
+
+        // ==============================
+        // BGEU not taken
+        // ==============================
+
+        @(posedge clk);
+        #1;
+
+        if (pc !== 32'h00000090)
+            $fatal(
+                "BGEU not-taken failed: PC = %h",
+                pc
+            );
+
+        $display(
+            "BGEU not taken: x7 >= x6 is false, PC = %h",
+            pc
+        );
+
 
         // ==========================
         // Passed

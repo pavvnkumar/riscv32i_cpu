@@ -18,6 +18,16 @@ module tb_decoder;
     logic mem_write;
     logic mem_to_reg;
 
+    logic        branch;
+    logic [2:0]  branch_type;
+
+    localparam BR_BEQ  = 3'b000;
+    localparam BR_BNE  = 3'b001;
+    localparam BR_BLT  = 3'b010;
+    localparam BR_BGE  = 3'b011;
+    localparam BR_BLTU = 3'b100;
+    localparam BR_BGEU = 3'b101;
+
 
     decoder dut (
         .instruction (instruction),
@@ -31,7 +41,9 @@ module tb_decoder;
         .mem_read    (mem_read),
         .mem_write   (mem_write),
         .mem_to_reg  (mem_to_reg),
-        .valid       (valid)
+        .valid       (valid),
+        .branch      (branch),
+        .branch_type (branch_type)
     );
 
 
@@ -440,6 +452,296 @@ module tb_decoder;
 
         $display("SW   : rs1=%0d rs2=%0d imm=%0d",
                  rs1, rs2, immediate);
+
+        // ==============================
+        // BEQ x6, x7, +8
+        // ==============================
+
+        instruction = 32'h00730463;
+
+        #1;
+
+        if (rs1 !== 5'd6)
+            $fatal("BEQ rs1 failed: %0d", rs1);
+
+        if (rs2 !== 5'd7)
+            $fatal("BEQ rs2 failed: %0d", rs2);
+
+        if (immediate !== 32'd8)
+            $fatal("BEQ immediate failed: %0d", immediate);
+
+        if (branch !== 1'b1)
+            $fatal("BEQ branch failed: %b", branch);
+
+        if (branch_type !== BR_BEQ)
+            $fatal("BEQ branch_type failed: %b", branch_type);
+
+        if (reg_write !== 1'b0)
+            $fatal("BEQ reg_write should be 0");
+
+        if (mem_read !== 1'b0)
+            $fatal("BEQ mem_read should be 0");
+
+        if (mem_write !== 1'b0)
+            $fatal("BEQ mem_write should be 0");
+
+        if (valid !== 1'b1)
+            $fatal("BEQ valid failed");
+
+        $display(
+            "BEQ  : rs1=%0d rs2=%0d imm=%0d",
+            rs1, rs2, immediate
+        );
+
+        // ==============================
+        // BNE x6, x7, +8
+        // ==============================
+
+        instruction = 32'h00731463;
+
+        #1;
+
+        if (rs1 !== 5'd6)
+            $fatal("BNE rs1 failed: %0d", rs1);
+
+        if (rs2 !== 5'd7)
+            $fatal("BNE rs2 failed: %0d", rs2);
+
+        if (immediate !== 32'd8)
+            $fatal("BNE immediate failed: %0d", immediate);
+
+        if (branch !== 1'b1)
+            $fatal("BNE branch failed: %b", branch);
+
+        if (branch_type !== BR_BNE)
+            $fatal("BNE branch_type failed: %b", branch_type);
+
+        if (reg_write !== 1'b0)
+            $fatal("BNE reg_write should be 0");
+
+        if (mem_read !== 1'b0)
+            $fatal("BNE mem_read should be 0");
+
+        if (mem_write !== 1'b0)
+            $fatal("BNE mem_write should be 0");
+
+        if (valid !== 1'b1)
+            $fatal("BNE valid failed");
+
+        $display(
+            "BNE  : rs1=%0d rs2=%0d imm=%0d",
+            rs1, rs2, immediate
+        );
+
+        // ==============================
+        // BLT x6, x7, +8
+        // ==============================
+        
+        instruction = 32'h00734463;
+        
+        #1;
+        
+        if (rs1 !== 5'd6)
+            $fatal("BLT rs1 failed: %0d", rs1);
+        
+        if (rs2 !== 5'd7)
+            $fatal("BLT rs2 failed: %0d", rs2);
+        
+        if (immediate !== 32'd8)
+            $fatal("BLT immediate failed: %0d", immediate);
+        
+        if (branch !== 1'b1)
+            $fatal("BLT branch failed: %b", branch);
+        
+        if (branch_type !== 3'b010)
+            $fatal("BLT branch_type failed: %b", branch_type);
+        
+        if (reg_write !== 1'b0)
+            $fatal("BLT reg_write should be 0");
+        
+        if (mem_read !== 1'b0)
+            $fatal("BLT mem_read should be 0");
+        
+        if (mem_write !== 1'b0)
+            $fatal("BLT mem_write should be 0");
+        
+        if (valid !== 1'b1)
+            $fatal("BLT valid failed");
+        
+        $display(
+            "BLT  : rs1=%0d rs2=%0d imm=%0d",
+            rs1, rs2, immediate
+        );
+
+        // BGE x6, x7, +8
+        // 20 >= 5 → true
+
+        instruction = 32'h00735463;
+
+        #1;
+
+        if (rs1 !== 5'd6)
+            $fatal("BGE taken rs1 failed");
+
+        if (rs2 !== 5'd7)
+            $fatal("BGE taken rs2 failed");
+
+        if (immediate !== 32'd8)
+            $fatal("BGE taken immediate failed: %0d", immediate);
+
+        if (branch !== 1'b1)
+            $fatal("BGE taken branch failed");
+
+        if (branch_type !== BR_BGE)
+            $fatal("BGE taken branch_type failed");
+
+        if (valid !== 1'b1)
+            $fatal("BGE taken valid failed");
+
+        $display(
+            "BGE  : rs1=%0d rs2=%0d imm=%0d",
+            rs1, rs2, immediate
+        );
+
+
+        // BGE x7, x6, +8
+        // 5 >= 20 → false
+
+        instruction = 32'h0063D463;
+
+        #1;
+
+        if (rs1 !== 5'd7)
+            $fatal("BGE not-taken rs1 failed");
+
+        if (rs2 !== 5'd6)
+            $fatal("BGE not-taken rs2 failed");
+
+        if (immediate !== 32'd8)
+            $fatal("BGE not-taken immediate failed: %0d", immediate);
+
+        if (branch !== 1'b1)
+            $fatal("BGE not-taken branch failed");
+
+        if (branch_type !== BR_BGE)
+            $fatal("BGE not-taken branch_type failed");
+
+        if (valid !== 1'b1)
+            $fatal("BGE not-taken valid failed");
+
+        $display(
+            "BGE  : rs1=%0d rs2=%0d imm=%0d",
+            rs1, rs2, immediate
+        );
+
+        // ==============================
+        // BLTU
+        // ==============================
+
+        instruction = 32'h007A6463;   // BLTU x20, x7, +8
+
+        $display(
+                "BLTU raw: funct3=%b rs1=%0d rs2=%0d",
+                instruction[14:12],
+                instruction[19:15],
+                instruction[24:20]
+        );
+
+        #1;
+
+        $display(
+            "BLTU : rs1=%0d rs2=%0d imm=%0d",
+            rs1, rs2, immediate
+        );
+
+        if (rs1 !== 5'd20)
+            $fatal("BLTU rs1 failed: %0d", rs1);
+
+        if (rs2 !== 5'd7)
+            $fatal("BLTU rs2 failed: %0d", rs2);
+
+        if (immediate !== 32'd8)
+            $fatal("BLTU immediate failed: %0d", immediate);
+
+        if (branch !== 1'b1)
+            $fatal("BLTU branch failed");
+
+        if (branch_type !== BR_BLTU)
+            $fatal(
+                "BLTU branch_type failed: %b",
+                branch_type
+            );
+
+
+        // ==============================
+        // BLTU second case
+        // ==============================
+
+        instruction = 32'h0063E463;   // BLTU x7, x6, +8
+
+        #1;
+
+        $display(
+            "BLTU : rs1=%0d rs2=%0d imm=%0d",
+            rs1, rs2, immediate
+        );
+
+        if (rs1 !== 5'd7)
+            $fatal("BLTU rs1 failed: %0d", rs1);
+
+        if (rs2 !== 5'd6)
+            $fatal("BLTU rs2 failed: %0d", rs2);
+
+        if (immediate !== 32'd8)
+            $fatal("BLTU immediate failed: %0d", immediate);
+
+        if (branch !== 1'b1)
+            $fatal("BLTU branch failed");
+
+        if (branch_type !== 3'b100)
+            $fatal(
+                "BLTU branch_type failed: %b",
+                branch_type
+            );
+
+        // ==============================
+        // BGEU
+        // ==============================
+        
+        instruction = 32'h007A7463;   // BGEU x20, x7, +8
+        
+        #1;
+        
+        $display(
+            "BGEU : rs1=%0d rs2=%0d imm=%0d",
+            rs1, rs2, immediate
+        );
+        
+        if (rs1 !== 5'd20)
+            $fatal("BGEU rs1 failed: %0d", rs1);
+        
+        if (rs2 !== 5'd7)
+            $fatal("BGEU rs2 failed: %0d", rs2);
+        
+        if (immediate !== 32'd8)
+            $fatal("BGEU immediate failed: %0d", immediate);
+        
+        if (branch !== 1'b1)
+            $fatal("BGEU branch failed");
+        
+        if (branch_type !== BR_BGEU)
+            $fatal(
+                "BGEU branch_type failed: %b",
+                branch_type
+            );
+        
+        if (valid !== 1'b1)
+            $fatal("BGEU valid failed");
+        
+        $display(
+            "BGEU : rs1=%0d rs2=%0d imm=%0d",
+            rs1, rs2, immediate
+        );
 
 
         // =====================================================
