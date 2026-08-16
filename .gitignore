@@ -1,2 +1,6 @@
 obj_dir/
 .vscode/
+*.o
+programs/addi_test.S
+programs/addi_test.hex
+programs/main.S
