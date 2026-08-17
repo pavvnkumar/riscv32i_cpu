@@ -39,7 +39,10 @@ module cpu (
     logic [2:0]  branch_type;
 
     logic        take_branch;
-    logic [31:0] branch_target;
+    logic [31:0] control_target;
+
+    logic jump;
+    logic jalr;
 
     localparam BR_BEQ  = 3'b000;
     localparam BR_BNE  = 3'b001;
@@ -59,7 +62,9 @@ module cpu (
     // =========================================================
 
     assign writeback_data =
-        mem_to_reg ? memory_read_data : alu_result;
+        jump       ? pc + 32'd4 :
+        mem_to_reg ? memory_read_data :
+                     alu_result;
 
 
     // =========================================================
@@ -75,7 +80,10 @@ module cpu (
 
 
     // For now, always move to the next instruction
-    assign next_pc = take_branch ? branch_target : pc + 32'd4;
+    assign next_pc =
+    jump        ? control_target :
+    take_branch ? control_target :
+                  pc + 32'd4;
 
     // =========================================================
     // Instruction Memory
@@ -110,10 +118,14 @@ module cpu (
         .mem_to_reg (mem_to_reg),
         .valid        (valid),
         .branch      (branch),
-        .branch_type (branch_type)
+        .branch_type (branch_type),
+        .jump         (jump),
+        .jalr        (jalr)
     );
 
-    assign branch_target = pc + immediate;
+    assign control_target =
+        jalr ? ((read_data1 + immediate) & 32'hFFFFFFFE) :
+               (pc + immediate);
 
     assign take_branch =
     branch &&

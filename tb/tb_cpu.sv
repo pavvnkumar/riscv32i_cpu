@@ -45,6 +45,12 @@ module tb_cpu;
         dut.register_file.registers[6]  = 32'd20;
         dut.register_file.registers[7]  = 32'd5;
         dut.register_file.registers[20] = 32'hFFFFFFFF;
+        dut.register_file.registers[25] = 32'd0;
+        dut.register_file.registers[26] = 32'd0;
+        dut.register_file.registers[27] = 32'd0;
+        dut.register_file.registers[28] = 32'd0;
+        dut.register_file.registers[30] = 32'd0;
+        dut.register_file.registers[31] = 32'd0;
 
 
         // ==========================
@@ -412,6 +418,112 @@ module tb_cpu;
         $display(
             "BGEU not taken: x7 >= x6 is false, PC = %h",
             pc
+        );
+
+                // ==============================
+        // JAL
+        // ==============================
+
+        @(posedge clk);
+        #1;
+
+        if (pc !== 32'h00000098)
+            $fatal(
+                "JAL target failed: PC = %h",
+                pc
+            );
+
+        if (dut.register_file.registers[25] !== 32'h00000094)
+            $fatal(
+                "JAL link failed: x25 = %h",
+                dut.register_file.registers[25]
+            );
+
+        if (dut.register_file.registers[26] !== 32'd0)
+            $fatal(
+                "JAL skipped instruction executed: x26 = %0d",
+                dut.register_file.registers[26]
+            );
+
+        $display(
+            "JAL: target=0x%h link=0x%h skipped_x26=%0d",
+            pc,
+            dut.register_file.registers[25],
+            dut.register_file.registers[26]
+        );
+
+
+        // ==============================
+        // JAL target instruction
+        // ==============================
+
+        @(posedge clk);
+        #1;
+
+        if (dut.register_file.registers[27] !== 32'd42)
+            $fatal(
+                "JAL target instruction failed: x27 = %0d",
+                dut.register_file.registers[27]
+            );
+
+        $display(
+            "JAL target executed: x27 = %0d",
+            dut.register_file.registers[27]
+        );
+
+        // ==============================
+        // JALR
+        // ==============================
+
+        @(posedge clk);
+        #1;
+
+        if (pc !== 32'h000000A0)
+            $fatal(
+                "JALR setup failed: PC = %h",
+                pc
+            );
+
+        @(posedge clk);
+        #1;
+
+        if (pc !== 32'h000000A8)
+            $fatal(
+                "JALR target failed: PC = %h",
+                pc
+            );
+
+        if (dut.register_file.registers[30] !== 32'h000000A4)
+            $fatal(
+                "JALR link failed: x30 = %h",
+                dut.register_file.registers[30]
+            );
+
+        if (dut.register_file.registers[31] !== 32'd0)
+            $fatal(
+                "JALR skipped instruction executed: x31 = %0d",
+                dut.register_file.registers[31]
+            );
+
+        $display(
+            "JALR: target=0x%h link=0x%h skipped_x31=%0d",
+            pc,
+            dut.register_file.registers[30],
+            dut.register_file.registers[31]
+        );
+
+        @(posedge clk);
+        #1;
+
+        if (dut.register_file.registers[27] !== 32'd55)
+            $fatal(
+                "JALR target instruction failed: x27 = %0d",
+                dut.register_file.registers[27]
+            );
+
+        $display(
+            "JALR target executed: x27 = %0d",
+            dut.register_file.registers[27]
         );
 
 

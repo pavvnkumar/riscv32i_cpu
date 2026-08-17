@@ -18,7 +18,10 @@ module decoder (
     output logic mem_to_reg,
 
     output logic        branch,
-    output logic [2:0]  branch_type
+    output logic [2:0]  branch_type,
+
+    output logic        jump,
+    output logic        jalr
     );
 
     localparam logic [6:0] OPCODE_RTYPE = 7'b0110011;
@@ -57,6 +60,8 @@ module decoder (
         mem_to_reg = 1'b0;
         branch      = 1'b0;
         branch_type = 3'b000;
+        jump = 1'b0;
+        jalr = 1'b0;
 
         if (instruction[6:0] == OPCODE_RTYPE) begin
 
@@ -370,6 +375,40 @@ module decoder (
             
             end
 
+        end
+        else if (instruction[6:0] == 7'b1101111) begin
+
+            // JAL
+
+            immediate = {{11{instruction[31]}},
+                         instruction[31],
+                         instruction[19:12],
+                         instruction[20],
+                         instruction[30:21],
+                         1'b0};
+
+            reg_write = 1'b1;
+            jump      = 1'b1;
+            valid     = 1'b1;
+
+        end
+
+        else if (instruction[6:0] == 7'b1100111) begin
+
+            // JALR
+        
+            if (instruction[14:12] == 3'b000) begin
+            
+                immediate = {{20{instruction[31]}},
+                             instruction[31:20]};
+        
+                reg_write = 1'b1;
+                jump      = 1'b1;
+                jalr      = 1'b1;
+                valid     = 1'b1;
+        
+            end
+        
         end
 
 

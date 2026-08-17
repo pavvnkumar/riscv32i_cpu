@@ -21,6 +21,9 @@ module tb_decoder;
     logic        branch;
     logic [2:0]  branch_type;
 
+    logic jump;
+    logic jalr;
+
     localparam BR_BEQ  = 3'b000;
     localparam BR_BNE  = 3'b001;
     localparam BR_BLT  = 3'b010;
@@ -43,7 +46,9 @@ module tb_decoder;
         .mem_to_reg  (mem_to_reg),
         .valid       (valid),
         .branch      (branch),
-        .branch_type (branch_type)
+        .branch_type (branch_type),
+        .jump        (jump),
+        .jalr        (jalr)
     );
 
 
@@ -741,6 +746,99 @@ module tb_decoder;
         $display(
             "BGEU : rs1=%0d rs2=%0d imm=%0d",
             rs1, rs2, immediate
+        );
+
+        // ==============================
+        // JAL
+        // ==============================
+
+        instruction = 32'b0;
+
+        instruction[6:0]   = 7'b1101111;  // JAL
+        instruction[11:7]  = 5'd5;       // rd = x5
+
+        // J-immediate = 16
+        instruction[31]    = 1'b0;
+        instruction[19:12] = 8'b00000000;
+        instruction[20]    = 1'b0;
+        instruction[30:21] = 10'b0000001000;
+
+        #1;
+
+        if (rd !== 5)
+            $fatal("JAL rd failed: rd = %0d", rd);
+
+        if (immediate !== 32'd16)
+            $fatal("JAL immediate failed: immediate = %0d", immediate);
+
+        if (jump !== 1'b1)
+            $fatal("JAL jump failed: jump = %b", jump);
+
+        if (reg_write !== 1'b1)
+            $fatal("JAL reg_write failed: reg_write = %b", reg_write);
+
+        if (valid !== 1'b1)
+            $fatal("JAL valid failed: valid = %b", valid);
+
+        $display("JAL : rd=%0d imm=%0d jump=%b",
+                 rd, immediate, jump);
+
+
+        // ==============================
+        // JALR
+        // ==============================
+
+        instruction = 32'b0;
+
+        instruction[6:0]   = 7'b1100111;  // JALR
+        instruction[11:7]  = 5'd5;        // rd = x5
+        instruction[14:12] = 3'b000;      // funct3 = 000
+        instruction[19:15] = 5'd6;        // rs1 = x6
+
+        // I-immediate = 16
+        instruction[31:20] = 12'b000000010000;
+
+        #1;
+
+        if (rs1 !== 5'd6)
+            $fatal("JALR rs1 failed: rs1 = %0d", rs1);
+
+        if (rd !== 5'd5)
+            $fatal("JALR rd failed: rd = %0d", rd);
+
+        if (immediate !== 32'd16)
+            $fatal(
+                "JALR immediate failed: immediate = %0d",
+                immediate
+            );
+
+        if (jump !== 1'b1)
+            $fatal(
+                "JALR jump failed: jump = %b",
+                jump
+            );
+
+        if (jalr !== 1'b1)
+            $fatal(
+                "JALR jalr failed: jalr = %b",
+                jalr
+            );
+
+        if (reg_write !== 1'b1)
+            $fatal(
+                "JALR reg_write failed: reg_write = %b",
+                reg_write
+            );
+
+        if (valid !== 1'b1)
+            $fatal(
+                "JALR valid failed: valid = %b",
+                valid
+            );
+
+        $display(
+            "JALR : rs1=%0d rd=%0d imm=%0d jump=%b jalr=%b",
+            rs1, rd, immediate, jump, jalr
         );
 
 

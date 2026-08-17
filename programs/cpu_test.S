@@ -123,4 +123,27 @@ bgeu_not_taken:
 
     # 0x90
 end:
+    jal  x25, jal_target
+
+    # 0x94
+    addi x26, x0, 99
+
+    # 0x98
+jal_target:
+    addi x27, x0, 42
+
+    # 0x9C
+    addi x28, x0, 0xA8
+
+    # 0xA0
+    jalr x30, 0(x28)
+
+    # 0xA4
+    addi x31, x0, 99
+
+    # 0xA8
+jalr_target:
+    addi x27, x0, 55
+
+    # 0xAC
     nop
