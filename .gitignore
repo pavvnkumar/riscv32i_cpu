@@ -1,4 +1,5 @@
 obj_dir/
+obj_dir_*/
 .vscode/
 *.o
 programs/addi_test.S
