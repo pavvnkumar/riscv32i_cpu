@@ -31,6 +31,8 @@ module cpu (
     logic        mem_read;
     logic        mem_write;
     logic        mem_to_reg;
+    logic [1:0] mem_size;
+    logic       mem_unsigned;
 
     logic [31:0] memory_read_data;
     logic [31:0] writeback_data;
@@ -116,6 +118,8 @@ module cpu (
         .mem_read   (mem_read),
         .mem_write  (mem_write),
         .mem_to_reg (mem_to_reg),
+        .mem_size     (mem_size),
+        .mem_unsigned (mem_unsigned),
         .valid        (valid),
         .branch      (branch),
         .branch_type (branch_type),
@@ -181,6 +185,8 @@ module cpu (
         .mem_read   (mem_read),
         .addr       (alu_result),
         .write_data (read_data2),
+        .mem_size     (mem_size),
+        .mem_unsigned (mem_unsigned),
         .read_data  (memory_read_data)
     );
 

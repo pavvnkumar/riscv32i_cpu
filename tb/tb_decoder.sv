@@ -17,6 +17,8 @@ module tb_decoder;
     logic mem_read;
     logic mem_write;
     logic mem_to_reg;
+    logic [1:0]  mem_size;
+    logic        mem_unsigned;
 
     logic        branch;
     logic [2:0]  branch_type;
@@ -44,6 +46,8 @@ module tb_decoder;
         .mem_read    (mem_read),
         .mem_write   (mem_write),
         .mem_to_reg  (mem_to_reg),
+        .mem_size      (mem_size),
+        .mem_unsigned  (mem_unsigned),
         .valid       (valid),
         .branch      (branch),
         .branch_type (branch_type),
@@ -840,6 +844,69 @@ module tb_decoder;
             "JALR : rs1=%0d rd=%0d imm=%0d jump=%b jalr=%b",
             rs1, rd, immediate, jump, jalr
         );
+
+        // =================================
+        // LB x29, 16(x6)
+        // =================================
+
+        instruction = 32'h01030E83;
+
+        #1;
+
+        if (rs1 !== 5'd6)
+            $fatal("LB rs1 failed: got %0d", rs1);
+
+        if (rd !== 5'd29)
+            $fatal("LB rd failed: got %0d", rd);
+
+        if (immediate !== 32'd16)
+            $fatal(
+                "LB immediate failed: got %0d",
+                immediate
+            );
+
+        if (alu_control !== ALU_ADD)
+            $fatal("LB ALU control failed");
+
+        if (alu_src !== 1'b1)
+            $fatal("LB alu_src failed");
+
+        if (mem_read !== 1'b1)
+            $fatal("LB mem_read failed");
+
+        if (mem_write !== 1'b0)
+            $fatal("LB mem_write failed");
+
+        if (mem_to_reg !== 1'b1)
+            $fatal("LB mem_to_reg failed");
+
+        if (mem_size !== 2'b00)
+            $fatal(
+                "LB mem_size failed: got %b",
+                mem_size
+            );
+
+        if (mem_unsigned !== 1'b0)
+            $fatal(
+                "LB mem_unsigned failed: got %b",
+                mem_unsigned
+            );
+
+        if (reg_write !== 1'b1)
+            $fatal("LB reg_write failed");
+
+        if (valid !== 1'b1)
+            $fatal("LB valid failed");
+
+        $display(
+            "LB   : rs1=%0d imm=%0d rd=%0d size=%b unsigned=%b",
+            rs1,
+            immediate,
+            rd,
+            mem_size,
+            mem_unsigned
+        );
+
 
 
         // =====================================================

@@ -146,4 +146,22 @@ jalr_target:
     addi x27, x0, 55
 
     # 0xAC
+    addi x5, x0, 0x7F
+
+    # 0xB0
+    sw   x5, 16(x6)
+
+    # 0xB4
+    lb   x29, 16(x6)
+
+    # 0xB8
+    addi x5, x0, 0x80
+
+    # 0xBC
+    sw   x5, 20(x6)
+
+    # 0xC0
+    lb   x30, 20(x6)
+
+    # 0xC4
     nop

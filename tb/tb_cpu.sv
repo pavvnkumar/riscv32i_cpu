@@ -526,6 +526,43 @@ module tb_cpu;
             dut.register_file.registers[27]
         );
 
+        // ==============================
+        // LB
+        // ==============================
+
+        // Wait until CPU reaches LB at 0xB4
+        wait (dut.pc == 32'h000000B4);
+        @(posedge clk);
+        #1;
+
+        if (dut.register_file.registers[29] !== 32'h0000007F)
+            $fatal(
+                "LB positive failed: x29 = %h",
+                dut.register_file.registers[29]
+            );
+
+        $display(
+            "LB positive: x29 = %h",
+            dut.register_file.registers[29]
+        );
+
+
+        // Wait until CPU reaches LB at 0xC0
+        wait (dut.pc == 32'h000000C0);
+        @(posedge clk);
+        #1;
+
+        if (dut.register_file.registers[30] !== 32'hFFFFFF80)
+            $fatal(
+                "LB sign extension failed: x30 = %h",
+                dut.register_file.registers[30]
+            );
+
+        $display(
+            "LB sign extension: x30 = %h",
+            dut.register_file.registers[30]
+        );
+
 
         // ==========================
         // Passed
@@ -589,6 +626,12 @@ module tb_cpu;
         
         $display("x5  = %0d  (LW)",
                  dut.register_file.registers[5]);
+
+        $display("x29 = %h  (LB 0x7F)",
+                 dut.register_file.registers[29]);
+
+        $display("x30 = %h  (LB 0x80 sign-extended)",
+                 dut.register_file.registers[30]);
 
         $display("================================");
         $display("");

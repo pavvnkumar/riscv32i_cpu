@@ -7,6 +7,8 @@ module tb_data_mem;
 
     logic [31:0] addr;
     logic [31:0] write_data;
+    logic [1:0] mem_size;
+    logic       mem_unsigned;
 
     logic [31:0] read_data;
 
@@ -23,6 +25,8 @@ module tb_data_mem;
 
         .addr       (addr),
         .write_data (write_data),
+        .mem_size     (mem_size),
+        .mem_unsigned (mem_unsigned),
 
         .read_data  (read_data)
     );
@@ -48,6 +52,9 @@ module tb_data_mem;
 
         addr       = 32'b0;
         write_data = 32'b0;
+
+        mem_size     = 2'b10;  // word
+        mem_unsigned = 1'b0;
 
 
         // =====================================================
@@ -125,6 +132,83 @@ module tb_data_mem;
         if (read_data !== 32'd123)
             $fatal(
                 "Memory address isolation failed: got %0d",
+                read_data
+            );
+
+        mem_read = 1'b0;
+
+        // =====================================================
+        // LB - positive byte
+        // address 33 is byte offset +1 from address 32
+        // memory[32] currently contains 123 = 0x0000007B
+        // =====================================================
+
+        addr      = 32'd33;
+        mem_size  = 2'b00;      // byte
+        mem_read  = 1'b1;
+
+        #1;
+
+        if (read_data !== 32'h00000000)
+            $fatal(
+                "LB positive byte failed: got %h",
+                read_data
+            );
+
+        mem_read = 1'b0;
+
+
+        // =====================================================
+        // Prepare a word containing bytes:
+        // address 36:
+        //   +0 = 0x7F
+        //   +1 = 0x80
+        // =====================================================
+
+        addr       = 32'd36;
+        write_data = 32'h0000807F;
+        mem_size   = 2'b10;      // word
+        mem_write  = 1'b1;
+
+        @(posedge clk);
+        #1;
+
+        mem_write = 1'b0;
+
+
+        // =====================================================
+        // LB 0x7F
+        // =====================================================
+
+        addr      = 32'd36;
+        mem_size  = 2'b00;
+        mem_read  = 1'b1;
+
+        #1;
+
+        if (read_data !== 32'h0000007F)
+            $fatal(
+                "LB 0x7F failed: got %h",
+                read_data
+            );
+
+        mem_read = 1'b0;
+
+
+        // =====================================================
+        // LB 0x80
+        // Must sign-extend to FFFFFF80
+        // =====================================================
+
+        addr      = 32'd37;
+        mem_size  = 2'b00;
+        mem_read  = 1'b1;
+
+        #1;
+
+        if (read_data !== 32'hFFFFFF80)
+            $fatal(
+                "LB 0x80 sign extension failed: got %h",
                 read_data
             );
 

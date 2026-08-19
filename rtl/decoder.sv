@@ -16,12 +16,15 @@ module decoder (
     output logic mem_read,
     output logic mem_write,
     output logic mem_to_reg,
+    output logic [1:0]  mem_size,
+    output logic        mem_unsigned,
 
     output logic        branch,
     output logic [2:0]  branch_type,
 
     output logic        jump,
     output logic        jalr
+
     );
 
     localparam logic [6:0] OPCODE_RTYPE = 7'b0110011;
@@ -58,6 +61,8 @@ module decoder (
         mem_read   = 1'b0;
         mem_write  = 1'b0;
         mem_to_reg = 1'b0;
+        mem_size     = 2'b10;
+        mem_unsigned = 1'b0;
         branch      = 1'b0;
         branch_type = 3'b000;
         jump = 1'b0;
@@ -232,23 +237,38 @@ module decoder (
         end
 
         else if (instruction[6:0] == 7'b0000011) begin
-                
-            // LW
 
-            if (instruction[14:12] == 3'b010) begin
-            
-                alu_control = ALU_ADD;
+            // Loads
 
-                immediate = {{20{instruction[31]}},
-                             instruction[31:20]};
+            immediate = {{20{instruction[31]}},
+                         instruction[31:20]};
 
-                alu_src   = 1'b1;
-                mem_read  = 1'b1;
-                mem_to_reg = 1'b1;
-                reg_write = 1'b1;
-                valid      = 1'b1;
+            alu_control = ALU_ADD;
+            alu_src     = 1'b1;
+            mem_read    = 1'b1;
+            mem_to_reg  = 1'b1;
+            reg_write   = 1'b1;
+            valid       = 1'b1;
 
-            end
+            case (instruction[14:12])
+
+                3'b000: begin
+                    // LB
+                    mem_size     = 2'b00;
+                    mem_unsigned = 1'b0;
+                end
+
+                3'b010: begin
+                    // LW
+                    mem_size     = 2'b10;
+                    mem_unsigned = 1'b0;
+                end
+
+                default: begin
+                    valid = 1'b0;
+                end
+
+            endcase
 
         end
 
