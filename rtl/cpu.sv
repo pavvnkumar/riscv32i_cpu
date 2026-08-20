@@ -46,12 +46,25 @@ module cpu (
     logic jump;
     logic jalr;
 
+    logic        alu_a_pc;
+    logic        alu_a_zero;
+    logic [31:0] alu_a;
+
     localparam BR_BEQ  = 3'b000;
     localparam BR_BNE  = 3'b001;
     localparam BR_BLT  = 3'b010;
     localparam BR_BGE  = 3'b011;
     localparam BR_BLTU = 3'b100;
     localparam BR_BGEU = 3'b101;
+
+    always_comb begin
+        if (alu_a_pc)
+            alu_a = pc;
+        else if (alu_a_zero)
+            alu_a = 32'b0;
+        else
+            alu_a = read_data1;
+    end
 
     // =========================================================
     // ALU second operand
@@ -124,7 +137,9 @@ module cpu (
         .branch      (branch),
         .branch_type (branch_type),
         .jump         (jump),
-        .jalr        (jalr)
+        .jalr        (jalr),
+        .alu_a_pc    (alu_a_pc),
+        .alu_a_zero  (alu_a_zero)
     );
 
     assign control_target =
@@ -166,7 +181,7 @@ module cpu (
     // =========================================================
 
     alu arithmetic_logic_unit (
-        .a           (read_data1),
+        .a(alu_a),
 
         // MUX output
         .b           (alu_b),

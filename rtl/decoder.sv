@@ -23,7 +23,10 @@ module decoder (
     output logic [2:0]  branch_type,
 
     output logic        jump,
-    output logic        jalr
+    output logic        jalr,
+
+    output logic        alu_a_pc,
+    output logic        alu_a_zero
 
     );
 
@@ -67,6 +70,8 @@ module decoder (
         branch_type = 3'b000;
         jump = 1'b0;
         jalr = 1'b0;
+        alu_a_pc   = 1'b0;
+        alu_a_zero = 1'b0;
 
         if (instruction[6:0] == OPCODE_RTYPE) begin
 
@@ -286,6 +291,34 @@ module decoder (
                 end
 
             endcase
+
+        end
+
+        else if (instruction[6:0] == 7'b0110111) begin
+
+            // LUI
+
+            immediate = {instruction[31:12], 12'b0};
+
+            alu_control = ALU_ADD;
+            alu_a_zero  = 1'b1;
+            alu_src     = 1'b1;
+            reg_write   = 1'b1;
+            valid       = 1'b1;
+
+        end
+
+        else if (instruction[6:0] == 7'b0010111) begin
+
+            // AUIPC
+
+            immediate = {instruction[31:12], 12'b0};
+
+            alu_control = ALU_ADD;
+            alu_a_pc    = 1'b1;
+            alu_src     = 1'b1;
+            reg_write   = 1'b1;
+            valid       = 1'b1;
 
         end
 

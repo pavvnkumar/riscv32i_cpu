@@ -765,6 +765,43 @@ module tb_cpu;
             dut.data_memory.memory[12][31:16]
         );
 
+        // ==============================
+        // LUI
+        // ==============================
+
+        wait (dut.pc == 32'h0000011C);
+        #1;
+
+        if (dut.register_file.registers[4] !== 32'h12345000)
+            $fatal(
+                "LUI failed: x4 = %h",
+                dut.register_file.registers[4]
+            );
+
+        $display(
+            "LUI: x4 = %h",
+            dut.register_file.registers[4]
+        );
+
+        // ==============================
+        // AUIPC
+        // ==============================
+
+        // AUIPC at 0x120 commits when PC advances to 0x124
+        wait (dut.pc == 32'h00000124);
+        #1;
+
+        if (dut.register_file.registers[3] !== 32'h00001120)
+            $fatal(
+                "AUIPC failed: x3 = %h",
+                dut.register_file.registers[3]
+            );
+
+        $display(
+            "AUIPC: x3 = %h",
+            dut.register_file.registers[3]
+        );
+
         // ==========================
         // Passed
         // ==========================

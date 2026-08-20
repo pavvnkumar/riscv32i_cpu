@@ -11,6 +11,9 @@ module tb_decoder;
     logic [31:0] immediate;
     logic        alu_src;
 
+    logic        alu_a_pc;
+    logic        alu_a_zero;
+
     logic        reg_write;
     logic        valid;
 
@@ -52,7 +55,9 @@ module tb_decoder;
         .branch      (branch),
         .branch_type (branch_type),
         .jump        (jump),
-        .jalr        (jalr)
+        .jalr        (jalr),
+        .alu_a_pc    (alu_a_pc),
+        .alu_a_zero  (alu_a_zero)
     );
 
 
@@ -500,35 +505,35 @@ module tb_decoder;
         // SRA
         // SRA x24, x6, x7
         // =================================
-        
+
         instruction = 32'h40735C33;
-        
+
         #1;
-        
+
         if (rs1 !== 5'd6)
             $fatal("SRA rs1 failed: got %0d", rs1);
-        
+
         if (rs2 !== 5'd7)
             $fatal("SRA rs2 failed: got %0d", rs2);
-        
+
         if (rd !== 5'd24)
             $fatal("SRA rd failed: got %0d", rd);
-        
+
         if (alu_control !== ALU_SRA)
             $fatal(
                 "SRA alu_control failed: got %h",
                 alu_control
             );
-        
+
         if (alu_src !== 1'b0)
             $fatal("SRA alu_src failed: got %b", alu_src);
-        
+
         if (reg_write !== 1'b1)
             $fatal("SRA reg_write failed");
-        
+
         if (valid !== 1'b1)
             $fatal("SRA valid failed");
-        
+
         $display(
             "SRA  : rs1=%0d rs2=%0d rd=%0d",
             rs1, rs2, rd
@@ -675,7 +680,7 @@ module tb_decoder;
             rs1, rs2, immediate, mem_size
         );
 
-        
+
         // =================================
         // SW x7, 12(x6)
         // =================================
@@ -800,38 +805,38 @@ module tb_decoder;
         // ==============================
         // BLT x6, x7, +8
         // ==============================
-        
+
         instruction = 32'h00734463;
-        
+
         #1;
-        
+
         if (rs1 !== 5'd6)
             $fatal("BLT rs1 failed: %0d", rs1);
-        
+
         if (rs2 !== 5'd7)
             $fatal("BLT rs2 failed: %0d", rs2);
-        
+
         if (immediate !== 32'd8)
             $fatal("BLT immediate failed: %0d", immediate);
-        
+
         if (branch !== 1'b1)
             $fatal("BLT branch failed: %b", branch);
-        
+
         if (branch_type !== 3'b010)
             $fatal("BLT branch_type failed: %b", branch_type);
-        
+
         if (reg_write !== 1'b0)
             $fatal("BLT reg_write should be 0");
-        
+
         if (mem_read !== 1'b0)
             $fatal("BLT mem_read should be 0");
-        
+
         if (mem_write !== 1'b0)
             $fatal("BLT mem_write should be 0");
-        
+
         if (valid !== 1'b1)
             $fatal("BLT valid failed");
-        
+
         $display(
             "BLT  : rs1=%0d rs2=%0d imm=%0d",
             rs1, rs2, immediate
@@ -971,37 +976,37 @@ module tb_decoder;
         // ==============================
         // BGEU
         // ==============================
-        
+
         instruction = 32'h007A7463;   // BGEU x20, x7, +8
-        
+
         #1;
-        
+
         $display(
             "BGEU : rs1=%0d rs2=%0d imm=%0d",
             rs1, rs2, immediate
         );
-        
+
         if (rs1 !== 5'd20)
             $fatal("BGEU rs1 failed: %0d", rs1);
-        
+
         if (rs2 !== 5'd7)
             $fatal("BGEU rs2 failed: %0d", rs2);
-        
+
         if (immediate !== 32'd8)
             $fatal("BGEU immediate failed: %0d", immediate);
-        
+
         if (branch !== 1'b1)
             $fatal("BGEU branch failed");
-        
+
         if (branch_type !== BR_BGEU)
             $fatal(
                 "BGEU branch_type failed: %b",
                 branch_type
             );
-        
+
         if (valid !== 1'b1)
             $fatal("BGEU valid failed");
-        
+
         $display(
             "BGEU : rs1=%0d rs2=%0d imm=%0d",
             rs1, rs2, immediate
@@ -1098,6 +1103,104 @@ module tb_decoder;
         $display(
             "JALR : rs1=%0d rd=%0d imm=%0d jump=%b jalr=%b",
             rs1, rd, immediate, jump, jalr
+        );
+
+        // ========================================
+        // LUI x5, 0x12345
+        // ========================================
+
+        instruction = 32'h123452B7;
+
+        #1;
+
+        if (rd !== 5'd5)
+            $fatal("LUI rd failed: %0d", rd);
+
+        if (immediate !== 32'h12345000)
+            $fatal("LUI immediate failed: %h", immediate);
+
+        if (alu_control !== ALU_ADD)
+            $fatal("LUI ALU control failed");
+
+        if (alu_a_zero !== 1'b1)
+            $fatal("LUI alu_a_zero failed");
+
+        if (alu_src !== 1'b1)
+            $fatal("LUI alu_src failed");
+
+        if (reg_write !== 1'b1)
+            $fatal("LUI reg_write failed");
+
+        if (mem_read !== 1'b0)
+            $fatal("LUI mem_read should be 0");
+
+        if (mem_write !== 1'b0)
+            $fatal("LUI mem_write should be 0");
+
+        if (mem_to_reg !== 1'b0)
+            $fatal("LUI mem_to_reg should be 0");
+
+        if (branch !== 1'b0)
+            $fatal("LUI branch should be 0");
+
+        if (jump !== 1'b0)
+            $fatal("LUI jump should be 0");
+
+        if (valid !== 1'b1)
+            $fatal("LUI valid failed");
+
+        $display("LUI: rd=%0d immediate=%h", rd, immediate);
+
+        // ========================================
+        // AUIPC x5, 0x12345
+        // ========================================
+
+        instruction = 32'h12345297;
+
+        #1;
+
+        if (rd !== 5'd5)
+            $fatal("AUIPC rd failed: %0d", rd);
+
+        if (immediate !== 32'h12345000)
+            $fatal("AUIPC immediate failed: %h", immediate);
+
+        if (alu_control !== ALU_ADD)
+            $fatal("AUIPC ALU control failed");
+
+        if (alu_a_pc !== 1'b1)
+            $fatal("AUIPC alu_a_pc failed");
+
+        if (alu_src !== 1'b1)
+            $fatal("AUIPC alu_src failed");
+
+        if (reg_write !== 1'b1)
+            $fatal("AUIPC reg_write failed");
+
+        if (mem_read !== 1'b0)
+            $fatal("AUIPC mem_read should be 0");
+
+        if (mem_write !== 1'b0)
+            $fatal("AUIPC mem_write should be 0");
+
+        if (mem_to_reg !== 1'b0)
+            $fatal("AUIPC mem_to_reg should be 0");
+
+        if (branch !== 1'b0)
+            $fatal("AUIPC branch should be 0");
+
+        if (jump !== 1'b0)
+            $fatal("AUIPC jump should be 0");
+
+        if (jalr !== 1'b0)
+            $fatal("AUIPC jalr should be 0");
+
+        if (valid !== 1'b1)
+            $fatal("AUIPC valid failed");
+
+        $display(
+            "AUIPC: rd=%0d immediate=%h alu_a_pc=%b",
+            rd, immediate, alu_a_pc
         );
 
         // =================================

@@ -233,3 +233,19 @@ jalr_target:
 
     # 0x114
     nop
+
+    # LUI CPU test
+
+    # 0x118
+    lui x4, 0x12345
+
+    # 0x11C
+    nop
+
+    # AUIPC CPU test
+
+    # 0x120
+    auipc x3, 0x1
+
+    # 0x124
+    nop
