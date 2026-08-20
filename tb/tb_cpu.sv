@@ -564,6 +564,48 @@ module tb_cpu;
         );
 
 
+        // ==============================
+        // LBU positive
+        // ==============================
+
+        // Wait until CPU reaches LBU at 0xC4
+        wait (dut.pc == 32'h000000C4);
+        @(posedge clk);
+        #1;
+
+        if (dut.register_file.registers[31] !== 32'h0000007F)
+            $fatal(
+                "LBU positive failed: x31 = %h",
+                dut.register_file.registers[31]
+            );
+
+        $display(
+            "LBU positive: x31 = %h",
+            dut.register_file.registers[31]
+        );
+
+
+        // ==============================
+        // LBU unsigned high-bit byte
+        // ==============================
+
+        // Wait until CPU reaches LBU at 0xC8
+        wait (dut.pc == 32'h000000C8);
+        @(posedge clk);
+        #1;
+
+        if (dut.register_file.registers[28] !== 32'h00000080)
+            $fatal(
+                "LBU unsigned failed: x28 = %h",
+                dut.register_file.registers[28]
+            );
+
+        $display(
+            "LBU unsigned: x28 = %h",
+            dut.register_file.registers[28]
+        );
+
+
         // ==========================
         // Passed
         // ==========================
@@ -632,6 +674,12 @@ module tb_cpu;
 
         $display("x30 = %h  (LB 0x80 sign-extended)",
                  dut.register_file.registers[30]);
+
+        $display("x31 = %h  (LBU 0x7F)",
+                 dut.register_file.registers[31]);
+
+        $display("x28 = %h  (LBU 0x80 zero-extended)",
+                 dut.register_file.registers[28]);
 
         $display("================================");
         $display("");

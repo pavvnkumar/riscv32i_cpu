@@ -163,5 +163,13 @@ jalr_target:
     # 0xC0
     lb   x30, 20(x6)
 
+    # LBU tests
+
     # 0xC4
+    lbu  x31, 16(x6)
+
+    # 0xC8
+    lbu  x28, 20(x6)
+
+    # 0xCC
     nop

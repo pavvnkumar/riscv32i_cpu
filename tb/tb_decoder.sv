@@ -907,6 +907,68 @@ module tb_decoder;
             mem_unsigned
         );
 
+        // =================================
+        // LBU x31, 16(x6)
+        // =================================
+
+        instruction = 32'h01034F83;
+
+        #1;
+
+        if (rs1 !== 5'd6)
+            $fatal("LBU rs1 failed: got %0d", rs1);
+
+        if (rd !== 5'd31)
+            $fatal("LBU rd failed: got %0d", rd);
+
+        if (immediate !== 32'd16)
+            $fatal(
+                "LBU immediate failed: got %0d",
+                immediate
+            );
+
+        if (alu_control !== ALU_ADD)
+            $fatal("LBU ALU control failed");
+
+        if (alu_src !== 1'b1)
+            $fatal("LBU alu_src failed");
+
+        if (mem_read !== 1'b1)
+            $fatal("LBU mem_read failed");
+
+        if (mem_write !== 1'b0)
+            $fatal("LBU mem_write failed");
+
+        if (mem_to_reg !== 1'b1)
+            $fatal("LBU mem_to_reg failed");
+
+        if (mem_size !== 2'b00)
+            $fatal(
+                "LBU mem_size failed: got %b",
+                mem_size
+            );
+
+        if (mem_unsigned !== 1'b1)
+            $fatal(
+                "LBU mem_unsigned failed: got %b",
+                mem_unsigned
+            );
+
+        if (reg_write !== 1'b1)
+            $fatal("LBU reg_write failed");
+
+        if (valid !== 1'b1)
+            $fatal("LBU valid failed");
+
+        $display(
+            "LBU  : rs1=%0d imm=%0d rd=%0d size=%b unsigned=%b",
+            rs1,
+            immediate,
+            rd,
+            mem_size,
+            mem_unsigned
+        );
+
 
 
         // =====================================================

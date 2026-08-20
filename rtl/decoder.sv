@@ -264,6 +264,12 @@ module decoder (
                     mem_unsigned = 1'b0;
                 end
 
+                3'b100: begin
+                    // LBU
+                    mem_size     = 2'b00;
+                    mem_unsigned = 1'b1;
+                end
+
                 default: begin
                     valid = 1'b0;
                 end

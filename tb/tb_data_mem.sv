@@ -214,6 +214,92 @@ module tb_data_mem;
 
         mem_read = 1'b0;
 
+        // ========================================
+        // LB / LBU byte-load verification
+        // ========================================
+
+        // Store 0x0000007F
+        write_data   = 32'h0000007F;
+        addr         = 32'h00000010;
+        mem_write    = 1'b1;
+
+        @(posedge clk);
+        #1;
+
+        mem_write = 1'b0;
+
+
+        // ----------------------------------------
+        // LB 0x7F -> 0x0000007F
+        // ----------------------------------------
+
+        mem_read     = 1'b1;
+        mem_size     = 2'b00;
+        mem_unsigned = 1'b0;
+        addr         = 32'h00000010;
+
+        #1;
+
+        if (read_data !== 32'h0000007F)
+            $fatal("LB 0x7F failed: %h", read_data);
+
+
+        // ----------------------------------------
+        // LBU 0x7F -> 0x0000007F
+        // ----------------------------------------
+
+        mem_unsigned = 1'b1;
+
+        #1;
+
+        if (read_data !== 32'h0000007F)
+            $fatal("LBU 0x7F failed: %h", read_data);
+
+
+        // ----------------------------------------
+        // Store 0x00000080
+        // ----------------------------------------
+
+        mem_read   = 1'b0;
+        mem_write  = 1'b1;
+        write_data = 32'h00000080;
+        addr       = 32'h00000014;
+
+        @(posedge clk);
+        #1;
+
+        mem_write = 1'b0;
+
+
+        // ----------------------------------------
+        // LB 0x80 -> 0xFFFFFF80
+        // ----------------------------------------
+
+        mem_read     = 1'b1;
+        mem_unsigned = 1'b0;
+        addr         = 32'h00000014;
+
+        #1;
+
+        if (read_data !== 32'hFFFFFF80)
+            $fatal("LB 0x80 sign extension failed: %h", read_data);
+
+
+        // ----------------------------------------
+        // LBU 0x80 -> 0x00000080
+        // ----------------------------------------
+
+        mem_unsigned = 1'b1;
+
+        #1;
+
+        if (read_data !== 32'h00000080)
+            $fatal("LBU 0x80 zero extension failed: %h", read_data);
+
+        mem_read = 1'b0;
+
+        $display("LB/LBU byte-load tests PASSED");
+
 
         // =====================================================
         // PASSED

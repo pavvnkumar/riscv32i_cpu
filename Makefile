@@ -39,42 +39,42 @@ alu_test:
 	verilator --binary --timing \
 		--top-module tb_alu \
 		--Mdir obj_dir_alu \
-		$(RTL) tb/tb_alu.sv
+		rtl/alu.sv tb/tb_alu.sv
 	./obj_dir_alu/Vtb_alu
 
 decoder_test:
 	verilator --binary --timing \
 		--top-module tb_decoder \
 		--Mdir obj_dir_decoder \
-		$(RTL) tb/tb_decoder.sv
+		rtl/decoder.sv tb/tb_decoder.sv
 	./obj_dir_decoder/Vtb_decoder
 
 instr_mem_test:
 	verilator --binary --timing \
 		--top-module tb_instr_mem \
 		--Mdir obj_dir_instr_mem \
-		$(RTL) tb/tb_instr_mem.sv
+		rtl/instr_mem.sv tb/tb_instr_mem.sv
 	./obj_dir_instr_mem/Vtb_instr_mem
 
 data_mem_test:
 	verilator --binary --timing \
 		--top-module tb_data_mem \
 		--Mdir obj_dir_data_mem \
-		$(RTL) tb/tb_data_mem.sv
+		rtl/data_mem.sv tb/tb_data_mem.sv
 	./obj_dir_data_mem/Vtb_data_mem
 
 pc_test:
 	verilator --binary --timing \
 		--top-module tb_pc \
 		--Mdir obj_dir_pc \
-		$(RTL) tb/tb_pc.sv
+		rtl/pc.sv tb/tb_pc.sv
 	./obj_dir_pc/Vtb_pc
 
 regfile_test:
 	verilator --binary --timing \
 		--top-module tb_regfile \
 		--Mdir obj_dir_regfile \
-		$(RTL) tb/tb_regfile.sv
+		rtl/regfile.sv tb/tb_regfile.sv
 	./obj_dir_regfile/Vtb_regfile
 
 

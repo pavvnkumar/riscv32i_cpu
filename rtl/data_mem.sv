@@ -31,24 +31,41 @@ module data_mem (
                 end
 
                 2'b00: begin
-                    // LB
+                    // Byte load: LB or LBU
+
                     case (addr[1:0])
 
-                        2'b00:
-                            read_data = {{24{memory[addr[9:2]][7]}},
-                                         memory[addr[9:2]][7:0]};
+                        2'b00: begin
+                            if (mem_unsigned)
+                                read_data = {24'b0, memory[addr[9:2]][7:0]};
+                            else
+                                read_data = {{24{memory[addr[9:2]][7]}},
+                                             memory[addr[9:2]][7:0]};
+                        end
 
-                        2'b01:
-                            read_data = {{24{memory[addr[9:2]][15]}},
-                                         memory[addr[9:2]][15:8]};
+                        2'b01: begin
+                            if (mem_unsigned)
+                                read_data = {24'b0, memory[addr[9:2]][15:8]};
+                            else
+                                read_data = {{24{memory[addr[9:2]][15]}},
+                                             memory[addr[9:2]][15:8]};
+                        end
 
-                        2'b10:
-                            read_data = {{24{memory[addr[9:2]][23]}},
-                                         memory[addr[9:2]][23:16]};
+                        2'b10: begin
+                            if (mem_unsigned)
+                                read_data = {24'b0, memory[addr[9:2]][23:16]};
+                            else
+                                read_data = {{24{memory[addr[9:2]][23]}},
+                                             memory[addr[9:2]][23:16]};
+                        end
 
-                        2'b11:
-                            read_data = {{24{memory[addr[9:2]][31]}},
-                                         memory[addr[9:2]][31:24]};
+                        2'b11: begin
+                            if (mem_unsigned)
+                                read_data = {24'b0, memory[addr[9:2]][31:24]};
+                            else
+                                read_data = {{24{memory[addr[9:2]][31]}},
+                                             memory[addr[9:2]][31:24]};
+                        end
 
                     endcase
                 end
