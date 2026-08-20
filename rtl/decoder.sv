@@ -135,7 +135,7 @@ module decoder (
                 end
 
                 3'b101: begin
-                    
+
                     if (instruction[31:25] == 7'b0000000) begin
                         // SRL
                         alu_control = ALU_SRL;
@@ -344,23 +344,42 @@ module decoder (
         end
 
         else if (instruction[6:0] == 7'b0100011) begin
-        
-            // SW
 
-            if (instruction[14:12] == 3'b010) begin
-            
-                alu_control = ALU_ADD;
+            // Store instructions
 
-                immediate = {{20{instruction[31]}},
-                             instruction[31:25],
-                             instruction[11:7]};
+            alu_control = ALU_ADD;
 
-                alu_src   = 1'b1;
-                mem_write = 1'b1;
-                reg_write = 1'b0;
-                valid     = 1'b1;
+            immediate = {{20{instruction[31]}},
+                         instruction[31:25],
+                         instruction[11:7]};
 
-            end
+            alu_src   = 1'b1;
+            mem_write = 1'b1;
+            reg_write = 1'b0;
+            valid     = 1'b1;
+
+            case (instruction[14:12])
+
+                3'b000: begin
+                    // SB
+                    mem_size = 2'b00;
+                end
+
+                3'b001: begin
+                    // SH
+                    mem_size = 2'b01;
+                end
+
+                3'b010: begin
+                    // SW
+                    mem_size = 2'b10;
+                end
+
+                default: begin
+                    valid = 1'b0;
+                end
+
+            endcase
 
         end
 
@@ -369,7 +388,7 @@ module decoder (
             // BEQ
 
             if (instruction[14:12] == 3'b000) begin
-                        
+
                 immediate = {{19{instruction[31]}},
                              instruction[31],
                              instruction[7],
@@ -385,7 +404,7 @@ module decoder (
 
             // BNE
             else if (instruction[14:12] == 3'b001) begin
-            
+
                 immediate = {{19{instruction[31]}},
                              instruction[31],
                              instruction[7],
@@ -452,18 +471,18 @@ module decoder (
             else if (instruction[14:12] == 3'b111) begin
 
                 // BGEU
-            
+
                 immediate = {{19{instruction[31]}},
                              instruction[31],
                              instruction[7],
                              instruction[30:25],
                              instruction[11:8],
                              1'b0};
-            
+
                 branch      = 1'b1;
                 branch_type = BR_BGEU;
                 valid       = 1'b1;
-            
+
             end
 
         end
@@ -487,19 +506,19 @@ module decoder (
         else if (instruction[6:0] == 7'b1100111) begin
 
             // JALR
-        
+
             if (instruction[14:12] == 3'b000) begin
-            
+
                 immediate = {{20{instruction[31]}},
                              instruction[31:20]};
-        
+
                 reg_write = 1'b1;
                 jump      = 1'b1;
                 jalr      = 1'b1;
                 valid     = 1'b1;
-        
+
             end
-        
+
         end
 
 

@@ -576,6 +576,105 @@ module tb_decoder;
         $display("LW   : rs1=%0d imm=%0d rd=%0d",
                  rs1, immediate, rd);
 
+        // =================================
+        // SB x7, 12(x6)
+        // =================================
+
+        instruction = 32'h00730623;
+
+        #1;
+
+        if (rs1 !== 5'd6)
+            $fatal("SB rs1 failed: got %0d", rs1);
+
+        if (rs2 !== 5'd7)
+            $fatal("SB rs2 failed: got %0d", rs2);
+
+        if (immediate !== 32'd12)
+            $fatal("SB immediate failed: got %0d", immediate);
+
+        if (alu_control !== ALU_ADD)
+            $fatal("SB ALU control failed");
+
+        if (alu_src !== 1'b1)
+            $fatal("SB alu_src failed");
+
+        if (mem_read !== 1'b0)
+            $fatal("SB mem_read failed");
+
+        if (mem_write !== 1'b1)
+            $fatal("SB mem_write failed");
+
+        if (mem_to_reg !== 1'b0)
+            $fatal("SB mem_to_reg failed");
+
+        if (mem_size !== 2'b00)
+            $fatal("SB mem_size failed: got %b", mem_size);
+
+        if (mem_unsigned !== 1'b0)
+            $fatal("SB mem_unsigned failed");
+
+        if (reg_write !== 1'b0)
+            $fatal("SB reg_write should be 0");
+
+        if (valid !== 1'b1)
+            $fatal("SB valid failed");
+
+        $display(
+            "SB   : rs1=%0d rs2=%0d imm=%0d size=%b",
+            rs1, rs2, immediate, mem_size
+        );
+
+
+        // =================================
+        // SH x7, 12(x6)
+        // =================================
+
+        instruction = 32'h00731623;
+
+        #1;
+
+        if (rs1 !== 5'd6)
+            $fatal("SH rs1 failed: got %0d", rs1);
+
+        if (rs2 !== 5'd7)
+            $fatal("SH rs2 failed: got %0d", rs2);
+
+        if (immediate !== 32'd12)
+            $fatal("SH immediate failed: got %0d", immediate);
+
+        if (alu_control !== ALU_ADD)
+            $fatal("SH ALU control failed");
+
+        if (alu_src !== 1'b1)
+            $fatal("SH alu_src failed");
+
+        if (mem_read !== 1'b0)
+            $fatal("SH mem_read failed");
+
+        if (mem_write !== 1'b1)
+            $fatal("SH mem_write failed");
+
+        if (mem_to_reg !== 1'b0)
+            $fatal("SH mem_to_reg failed");
+
+        if (mem_size !== 2'b01)
+            $fatal("SH mem_size failed: got %b", mem_size);
+
+        if (mem_unsigned !== 1'b0)
+            $fatal("SH mem_unsigned failed");
+
+        if (reg_write !== 1'b0)
+            $fatal("SH reg_write should be 0");
+
+        if (valid !== 1'b1)
+            $fatal("SH valid failed");
+
+        $display(
+            "SH   : rs1=%0d rs2=%0d imm=%0d size=%b",
+            rs1, rs2, immediate, mem_size
+        );
+
         
         // =================================
         // SW x7, 12(x6)

@@ -722,6 +722,48 @@ module tb_cpu;
             dut.register_file.registers[5]
         );
 
+        // ==============================
+        // SB
+        // ==============================
+
+        // SB at 0x108:
+        // effective address = x6 + 28 = 20 + 28 = 48
+        // address 0x30 -> memory[12][7:0]
+        wait (dut.pc == 32'h0000010C);
+        #1;
+
+        if (dut.data_memory.memory[12][7:0] !== 8'h55)
+            $fatal(
+                "SB failed: memory[12][7:0] = %h",
+                dut.data_memory.memory[12][7:0]
+            );
+
+        $display(
+            "SB: memory[12][7:0] = %h",
+            dut.data_memory.memory[12][7:0]
+        );
+
+
+        // ==============================
+        // SH
+        // ==============================
+
+        // SH at 0x110:
+        // effective address = x6 + 30 = 20 + 30 = 50
+        // address 0x32 -> memory[12][31:16]
+        wait (dut.pc == 32'h00000114);
+        #1;
+
+        if (dut.data_memory.memory[12][31:16] !== 16'h0123)
+            $fatal(
+                "SH failed: memory[12][31:16] = %h",
+                dut.data_memory.memory[12][31:16]
+            );
+
+        $display(
+            "SH: memory[12][31:16] = %h",
+            dut.data_memory.memory[12][31:16]
+        );
 
         // ==========================
         // Passed

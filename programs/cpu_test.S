@@ -216,3 +216,20 @@ jalr_target:
 
     # 0x100
     nop
+
+    # Store byte / halfword CPU tests
+
+    # 0x104
+    addi x5, x0, 0x55
+
+    # 0x108
+    sb   x5, 28(x6)
+
+    # 0x10C
+    addi x5, x0, 0x123
+
+    # 0x110
+    sh   x5, 30(x6)
+
+    # 0x114
+    nop

@@ -108,8 +108,49 @@ module data_mem (
     // Write
     always_ff @(posedge clk) begin
 
-        if (mem_write)
-            memory[addr[9:2]] <= write_data;
+        if (mem_write) begin
+
+            case (mem_size)
+
+                2'b10: begin
+                    // SW
+                    memory[addr[9:2]] <= write_data;
+                end
+
+                2'b01: begin
+                    // SH
+                    if (addr[1] == 1'b0)
+                        memory[addr[9:2]][15:0] <= write_data[15:0];
+                    else
+                        memory[addr[9:2]][31:16] <= write_data[15:0];
+                end
+
+                2'b00: begin
+                    // SB
+                    case (addr[1:0])
+
+                        2'b00:
+                            memory[addr[9:2]][7:0] <= write_data[7:0];
+
+                        2'b01:
+                            memory[addr[9:2]][15:8] <= write_data[7:0];
+
+                        2'b10:
+                            memory[addr[9:2]][23:16] <= write_data[7:0];
+
+                        2'b11:
+                            memory[addr[9:2]][31:24] <= write_data[7:0];
+
+                    endcase
+                end
+
+                default: begin
+                    // No write
+                end
+
+            endcase
+
+        end
 
     end
 

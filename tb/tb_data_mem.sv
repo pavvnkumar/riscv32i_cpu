@@ -362,6 +362,165 @@ module tb_data_mem;
 
         $display("LH/LHU halfword-load tests PASSED");
 
+        // ========================================
+        // SB / SH / SW write verification
+        // ========================================
+
+        // ----------------------------------------
+        // SW baseline
+        // ----------------------------------------
+
+        mem_read     = 1'b0;
+        mem_write    = 1'b1;
+        mem_size     = 2'b10;
+        write_data   = 32'hAABBCCDD;
+        addr         = 32'h00000020;
+
+        @(posedge clk);
+        #1;
+
+        mem_write = 1'b0;
+
+        if (dut.memory[8] !== 32'hAABBCCDD)
+            $fatal(
+                "SW write failed: dut.memory[8] = %h",
+                dut.memory[8]
+            );
+
+
+        // ----------------------------------------
+        // SB at byte 0
+        // AABBCCDD -> AABBCC11
+        // ----------------------------------------
+
+        mem_write  = 1'b1;
+        mem_size   = 2'b00;
+        write_data = 32'h00000011;
+        addr       = 32'h00000020;
+
+        @(posedge clk);
+        #1;
+
+        mem_write = 1'b0;
+
+        if (dut.memory[8] !== 32'hAABBCC11)
+            $fatal(
+                "SB byte 0 failed: dut.memory[8] = %h",
+                dut.memory[8]
+            );
+
+
+        // ----------------------------------------
+        // SB at byte 1
+        // AABBCC11 -> AABB2211
+        // ----------------------------------------
+
+        mem_write  = 1'b1;
+        mem_size   = 2'b00;
+        write_data = 32'h00000022;
+        addr       = 32'h00000021;
+
+        @(posedge clk);
+        #1;
+
+        mem_write = 1'b0;
+
+        if (dut.memory[8] !== 32'hAABB2211)
+            $fatal(
+                "SB byte 1 failed: dut.memory[8] = %h",
+                dut.memory[8]
+            );
+
+
+        // ----------------------------------------
+        // SB at byte 2
+        // AABB2211 -> AA332211
+        // ----------------------------------------
+
+        mem_write  = 1'b1;
+        mem_size   = 2'b00;
+        write_data = 32'h00000033;
+        addr       = 32'h00000022;
+
+        @(posedge clk);
+        #1;
+
+        mem_write = 1'b0;
+
+        if (dut.memory[8] !== 32'hAA332211)
+            $fatal(
+                "SB byte 2 failed: dut.memory[8] = %h",
+                dut.memory[8]
+            );
+
+
+        // ----------------------------------------
+        // SB at byte 3
+        // AA332211 -> 44332211
+        // ----------------------------------------
+
+        mem_write  = 1'b1;
+        mem_size   = 2'b00;
+        write_data = 32'h00000044;
+        addr       = 32'h00000023;
+
+        @(posedge clk);
+        #1;
+
+        mem_write = 1'b0;
+
+        if (dut.memory[8] !== 32'h44332211)
+            $fatal(
+                "SB byte 3 failed: dut.memory[8] = %h",
+                dut.memory[8]
+            );
+
+
+        // ----------------------------------------
+        // SH at lower halfword
+        // 44332211 -> 44335566
+        // ----------------------------------------
+
+        mem_write  = 1'b1;
+        mem_size   = 2'b01;
+        write_data = 32'h00005566;
+        addr       = 32'h00000020;
+
+        @(posedge clk);
+        #1;
+
+        mem_write = 1'b0;
+
+        if (dut.memory[8] !== 32'h44335566)
+            $fatal(
+                "SH lower halfword failed: dut.memory[8] = %h",
+                dut.memory[8]
+            );
+
+
+        // ----------------------------------------
+        // SH at upper halfword
+        // 44335566 -> 77885566
+        // ----------------------------------------
+
+        mem_write  = 1'b1;
+        mem_size   = 2'b01;
+        write_data = 32'h00007788;
+        addr       = 32'h00000022;
+
+        @(posedge clk);
+        #1;
+
+        mem_write = 1'b0;
+
+        if (dut.memory[8] !== 32'h77885566)
+            $fatal(
+                "SH upper halfword failed: dut.memory[8] = %h",
+                dut.memory[8]
+            );
+
+        $display("SB/SH/SW write tests PASSED");
+
 
         // =====================================================
         // PASSED
