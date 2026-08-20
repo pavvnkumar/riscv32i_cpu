@@ -605,6 +605,123 @@ module tb_cpu;
             dut.register_file.registers[28]
         );
 
+        // ==============================
+        // SLLI
+        // ==============================
+
+        wait (dut.pc == 32'h000000D4);
+        #1;
+
+        if (dut.register_file.registers[5] !== 32'h00008000)
+            $fatal(
+                "SLLI failed: x5 = %h",
+                dut.register_file.registers[5]
+            );
+
+        $display(
+            "SLLI: x5 = %h",
+            dut.register_file.registers[5]
+        );
+
+        // ==============================
+        // LH
+        // ==============================
+
+        // LH at 0xDC commits when PC advances to 0xE0
+        wait (dut.pc == 32'h000000E0);
+        #1;
+
+        if (dut.register_file.registers[16] !== 32'hFFFF807F)
+            $fatal(
+                "LH sign extension failed: x16 = %h",
+                dut.register_file.registers[16]
+            );
+
+        $display(
+            "LH sign extension: x16 = %h",
+            dut.register_file.registers[16]
+        );
+
+
+        // ==============================
+        // LHU
+        // ==============================
+
+        // Wait until CPU reaches LHU at 0xE0
+        // LHU at 0xE0 commits when PC advances to 0xE4
+        wait (dut.pc == 32'h000000E4);
+        #1;
+
+        if (dut.register_file.registers[18] !== 32'h0000807F)
+            $fatal(
+                "LHU zero extension failed: x18 = %h",
+                dut.register_file.registers[18]
+            );
+
+        $display(
+            "LHU zero extension: x18 = %h",
+            dut.register_file.registers[18]
+        );
+
+        // ==============================
+        // SLTIU
+        // ==============================
+
+        // SLTIU is at 0xE8
+        wait (dut.pc == 32'h000000E8);
+        @(posedge clk);
+        #1;
+
+        if (dut.register_file.registers[19] !== 32'd1)
+            $fatal(
+                "SLTIU failed: x19 = %h",
+                dut.register_file.registers[19]
+            );
+
+        $display(
+            "SLTIU: x19 = %h",
+            dut.register_file.registers[19]
+        );
+
+        // ==============================
+        // SRLI
+        // ==============================
+
+        // SRLI at 0xF4 commits when PC advances to 0xF8
+        wait (dut.pc == 32'h000000F8);
+        #1;
+
+        if (dut.register_file.registers[5] !== 32'h7FFFFFFF)
+            $fatal(
+                "SRLI failed: x5 = %h",
+                dut.register_file.registers[5]
+            );
+
+        $display(
+            "SRLI: x5 = %h",
+            dut.register_file.registers[5]
+        );
+
+
+        // ==============================
+        // SRAI
+        // ==============================
+
+        // SRAI at 0xFC commits when PC advances to 0x100
+        wait (dut.pc == 32'h00000100);
+        #1;
+
+        if (dut.register_file.registers[5] !== 32'hFFFFFFFF)
+            $fatal(
+                "SRAI failed: x5 = %h",
+                dut.register_file.registers[5]
+            );
+
+        $display(
+            "SRAI: x5 = %h",
+            dut.register_file.registers[5]
+        );
+
 
         // ==========================
         // Passed
@@ -680,6 +797,12 @@ module tb_cpu;
 
         $display("x28 = %h  (LBU 0x80 zero-extended)",
                  dut.register_file.registers[28]);
+
+        $display("x16 = %h  (LH 0x807F sign-extended)",
+                 dut.register_file.registers[16]);
+
+        $display("x18 = %h  (LHU 0x807F zero-extended)",
+                 dut.register_file.registers[18]);
 
         $display("================================");
         $display("");

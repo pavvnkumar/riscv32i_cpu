@@ -300,6 +300,68 @@ module tb_data_mem;
 
         $display("LB/LBU byte-load tests PASSED");
 
+        // ========================================
+        // LH / LHU halfword-load verification
+        // ========================================
+
+        // Store 0x0000807F
+        //
+        // memory[address]:
+        //   +0,+1 = 0x807F
+        //   +2,+3 = 0x0000
+        //
+        // Therefore:
+        //   LH  -> FFFF807F
+        //   LHU -> 0000807F
+
+        write_data    = 32'h0000807F;
+        addr          = 32'h00000018;
+        mem_size      = 2'b10;      // word
+        mem_unsigned  = 1'b0;
+        mem_write     = 1'b1;
+
+        @(posedge clk);
+        #1;
+
+        mem_write = 1'b0;
+
+
+        // ----------------------------------------
+        // LH 0x807F -> 0xFFFF807F
+        // ----------------------------------------
+
+        mem_read     = 1'b1;
+        mem_size     = 2'b01;       // halfword
+        mem_unsigned = 1'b0;
+        addr         = 32'h00000018;
+
+        #1;
+
+        if (read_data !== 32'hFFFF807F)
+            $fatal(
+                "LH sign extension failed: got %h",
+                read_data
+            );
+
+
+        // ----------------------------------------
+        // LHU 0x807F -> 0x0000807F
+        // ----------------------------------------
+
+        mem_unsigned = 1'b1;
+
+        #1;
+
+        if (read_data !== 32'h0000807F)
+            $fatal(
+                "LHU zero extension failed: got %h",
+                read_data
+            );
+
+        mem_read = 1'b0;
+
+        $display("LH/LHU halfword-load tests PASSED");
+
 
         // =====================================================
         // PASSED

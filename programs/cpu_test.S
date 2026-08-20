@@ -171,5 +171,48 @@ jalr_target:
     # 0xC8
     lbu  x28, 20(x6)
 
+    # Halfword load tests
+
     # 0xCC
+    addi x5, x0, 0x80
+
+    # 0xD0
+    slli x5, x5, 8
+
+    # 0xD4
+    addi x5, x5, 0x7F
+
+    # 0xD8
+    sw   x5, 24(x6)
+
+    # 0xDC
+    lh   x16, 24(x6)
+
+    # 0xE0
+    lhu  x18, 24(x6)
+
+    # 0xE4
+    nop
+
+    # 0xE8
+    sltiu x19, x6, 25
+
+    # 0xEC
+    nop
+
+    # Shift-immediate CPU tests
+
+    # 0xF0
+    addi x5, x0, -1
+
+    # 0xF4
+    srli x5, x5, 1
+
+    # 0xF8
+    addi x5, x0, -1
+
+    # 0xFC
+    srai x5, x5, 1
+
+    # 0x100
     nop

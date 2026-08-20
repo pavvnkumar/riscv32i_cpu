@@ -30,6 +30,30 @@ module data_mem (
                     read_data = memory[addr[9:2]];
                 end
 
+                2'b01: begin
+                    // Halfword load: LH or LHU
+
+                    case (addr[1])
+
+                        1'b0: begin
+                            if (mem_unsigned)
+                                read_data = {16'b0, memory[addr[9:2]][15:0]};
+                            else
+                                read_data = {{16{memory[addr[9:2]][15]}},
+                                             memory[addr[9:2]][15:0]};
+                        end
+
+                        1'b1: begin
+                            if (mem_unsigned)
+                                read_data = {16'b0, memory[addr[9:2]][31:16]};
+                            else
+                                read_data = {{16{memory[addr[9:2]][31]}},
+                                             memory[addr[9:2]][31:16]};
+                        end
+
+                    endcase
+                end
+
                 2'b00: begin
                     // Byte load: LB or LBU
 

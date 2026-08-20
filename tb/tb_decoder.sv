@@ -231,6 +231,162 @@ module tb_decoder;
         if (valid !== 1'b1)
             $fatal("SLTI valid failed");
 
+        // =====================================================
+        // SLTIU x19, x6, 25
+        // =====================================================
+
+        instruction = 32'h01933993;
+
+        #1;
+
+        if (rs1 !== 5'd6)
+            $fatal("SLTIU rs1 failed: got %0d", rs1);
+
+        if (rd !== 5'd19)
+            $fatal("SLTIU rd failed: got %0d", rd);
+
+        if (immediate !== 32'd25)
+            $fatal(
+                "SLTIU immediate failed: got %h",
+                immediate
+            );
+
+        if (alu_control !== ALU_SLTU)
+            $fatal(
+                "SLTIU alu_control failed: got %h",
+                alu_control
+            );
+
+        if (alu_src !== 1'b1)
+            $fatal("SLTIU alu_src failed: got %b", alu_src);
+
+        if (reg_write !== 1'b1)
+            $fatal("SLTIU reg_write failed");
+
+        if (valid !== 1'b1)
+            $fatal("SLTIU valid failed");
+
+        // =====================================================
+        // SLLI x5, x5, 8
+        // =====================================================
+
+        instruction = 32'h00829293;
+
+        #1;
+
+        if (rs1 !== 5'd5)
+            $fatal("SLLI rs1 failed: got %0d", rs1);
+
+        if (rd !== 5'd5)
+            $fatal("SLLI rd failed: got %0d", rd);
+
+        if (immediate !== 32'd8)
+            $fatal(
+                "SLLI immediate failed: got %h",
+                immediate
+            );
+
+        if (alu_control !== ALU_SLL)
+            $fatal(
+                "SLLI alu_control failed: got %h",
+                alu_control
+            );
+
+        if (alu_src !== 1'b1)
+            $fatal("SLLI alu_src failed: got %b", alu_src);
+
+        if (reg_write !== 1'b1)
+            $fatal("SLLI reg_write failed");
+
+        if (valid !== 1'b1)
+            $fatal("SLLI valid failed");
+
+        $display(
+            "SLLI: rs1=%0d imm=%0d rd=%0d",
+            rs1, immediate, rd
+        );
+
+        // =====================================================
+        // SRLI x5, x5, 8
+        // =====================================================
+
+        instruction = 32'h0082D293;
+
+        #1;
+
+        if (rs1 !== 5'd5)
+            $fatal("SRLI rs1 failed: got %0d", rs1);
+
+        if (rd !== 5'd5)
+            $fatal("SRLI rd failed: got %0d", rd);
+
+        if (immediate !== 32'd8)
+            $fatal(
+                "SRLI immediate failed: got %h",
+                immediate
+            );
+
+        if (alu_control !== ALU_SRL)
+            $fatal(
+                "SRLI alu_control failed: got %h",
+                alu_control
+            );
+
+        if (alu_src !== 1'b1)
+            $fatal("SRLI alu_src failed: got %b", alu_src);
+
+        if (reg_write !== 1'b1)
+            $fatal("SRLI reg_write failed");
+
+        if (valid !== 1'b1)
+            $fatal("SRLI valid failed");
+
+        $display(
+            "SRLI: rs1=%0d imm=%0d rd=%0d",
+            rs1, immediate, rd
+        );
+
+
+        // =====================================================
+        // SRAI x5, x5, 8
+        // =====================================================
+
+        instruction = 32'h4082D293;
+
+        #1;
+
+        if (rs1 !== 5'd5)
+            $fatal("SRAI rs1 failed: got %0d", rs1);
+
+        if (rd !== 5'd5)
+            $fatal("SRAI rd failed: got %0d", rd);
+
+        if (immediate !== 32'd8)
+            $fatal(
+                "SRAI immediate failed: got %h",
+                immediate
+            );
+
+        if (alu_control !== ALU_SRA)
+            $fatal(
+                "SRAI alu_control failed: got %h",
+                alu_control
+            );
+
+        if (alu_src !== 1'b1)
+            $fatal("SRAI alu_src failed: got %b", alu_src);
+
+        if (reg_write !== 1'b1)
+            $fatal("SRAI reg_write failed");
+
+        if (valid !== 1'b1)
+            $fatal("SRAI valid failed");
+
+        $display(
+            "SRAI: rs1=%0d imm=%0d rd=%0d",
+            rs1, immediate, rd
+        );
+
         // =================================
         // SLTU
         // SLTU x19, x6, x7
@@ -962,6 +1118,131 @@ module tb_decoder;
 
         $display(
             "LBU  : rs1=%0d imm=%0d rd=%0d size=%b unsigned=%b",
+            rs1,
+            immediate,
+            rd,
+            mem_size,
+            mem_unsigned
+        );
+
+        // =================================
+        // LH x29, 16(x6)
+        // =================================
+
+        instruction = 32'h01031E83;
+
+        #1;
+
+        if (rs1 !== 5'd6)
+            $fatal("LH rs1 failed: got %0d", rs1);
+
+        if (rd !== 5'd29)
+            $fatal("LH rd failed: got %0d", rd);
+
+        if (immediate !== 32'd16)
+            $fatal(
+                "LH immediate failed: got %0d",
+                immediate
+            );
+
+        if (alu_control !== ALU_ADD)
+            $fatal("LH ALU control failed");
+
+        if (alu_src !== 1'b1)
+            $fatal("LH alu_src failed");
+
+        if (mem_read !== 1'b1)
+            $fatal("LH mem_read failed");
+
+        if (mem_write !== 1'b0)
+            $fatal("LH mem_write failed");
+
+        if (mem_to_reg !== 1'b1)
+            $fatal("LH mem_to_reg failed");
+
+        if (mem_size !== 2'b01)
+            $fatal(
+                "LH mem_size failed: got %b",
+                mem_size
+            );
+
+        if (mem_unsigned !== 1'b0)
+            $fatal(
+                "LH mem_unsigned failed: got %b",
+                mem_unsigned
+            );
+
+        if (reg_write !== 1'b1)
+            $fatal("LH reg_write failed");
+
+        if (valid !== 1'b1)
+            $fatal("LH valid failed");
+
+        $display(
+            "LH   : rs1=%0d imm=%0d rd=%0d size=%b unsigned=%b",
+            rs1,
+            immediate,
+            rd,
+            mem_size,
+            mem_unsigned
+        );
+
+
+        // =================================
+        // LHU x30, 16(x6)
+        // =================================
+
+        instruction = 32'h01035F03;
+
+        #1;
+
+        if (rs1 !== 5'd6)
+            $fatal("LHU rs1 failed: got %0d", rs1);
+
+        if (rd !== 5'd30)
+            $fatal("LHU rd failed: got %0d", rd);
+
+        if (immediate !== 32'd16)
+            $fatal(
+                "LHU immediate failed: got %0d",
+                immediate
+            );
+
+        if (alu_control !== ALU_ADD)
+            $fatal("LHU ALU control failed");
+
+        if (alu_src !== 1'b1)
+            $fatal("LHU alu_src failed");
+
+        if (mem_read !== 1'b1)
+            $fatal("LHU mem_read failed");
+
+        if (mem_write !== 1'b0)
+            $fatal("LHU mem_write failed");
+
+        if (mem_to_reg !== 1'b1)
+            $fatal("LHU mem_to_reg failed");
+
+        if (mem_size !== 2'b01)
+            $fatal(
+                "LHU mem_size failed: got %b",
+                mem_size
+            );
+
+        if (mem_unsigned !== 1'b1)
+            $fatal(
+                "LHU mem_unsigned failed: got %b",
+                mem_unsigned
+            );
+
+        if (reg_write !== 1'b1)
+            $fatal("LHU reg_write failed");
+
+        if (valid !== 1'b1)
+            $fatal("LHU valid failed");
+
+        $display(
+            "LHU  : rs1=%0d imm=%0d rd=%0d size=%b unsigned=%b",
             rs1,
             immediate,
             rd,

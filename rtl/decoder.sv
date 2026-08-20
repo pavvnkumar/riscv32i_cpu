@@ -228,6 +228,59 @@ module decoder (
                     valid     = 1'b1;
                 end
 
+                3'b011: begin
+                    // SLTIU
+
+                    alu_control = ALU_SLTU;
+
+                    immediate = {{20{instruction[31]}},
+                                instruction[31:20]};
+
+                    alu_src   = 1'b1;
+                    reg_write = 1'b1;
+                    valid     = 1'b1;
+                end
+
+                3'b001: begin
+                    // SLLI
+
+                    if (instruction[31:25] == 7'b0000000) begin
+
+                        alu_control = ALU_SLL;
+
+                        immediate = {27'b0, instruction[24:20]};
+
+                        alu_src   = 1'b1;
+                        reg_write = 1'b1;
+                        valid     = 1'b1;
+
+                    end
+                end
+
+                3'b101: begin
+                    // SRLI / SRAI
+
+                    immediate = {27'b0, instruction[24:20]};
+
+                    if (instruction[31:25] == 7'b0000000) begin
+                        // SRLI
+
+                        alu_control = ALU_SRL;
+                        alu_src     = 1'b1;
+                        reg_write   = 1'b1;
+                        valid       = 1'b1;
+
+                    end
+                    else if (instruction[31:25] == 7'b0100000) begin
+                        // SRAI
+
+                        alu_control = ALU_SRA;
+                        alu_src     = 1'b1;
+                        reg_write   = 1'b1;
+                        valid       = 1'b1;
+                    end
+                end
+
                 default: begin
                     valid = 1'b0;
                 end
@@ -258,6 +311,12 @@ module decoder (
                     mem_unsigned = 1'b0;
                 end
 
+                3'b001: begin
+                    // LH
+                    mem_size     = 2'b01;
+                    mem_unsigned = 1'b0;
+                end
+
                 3'b010: begin
                     // LW
                     mem_size     = 2'b10;
@@ -267,6 +326,12 @@ module decoder (
                 3'b100: begin
                     // LBU
                     mem_size     = 2'b00;
+                    mem_unsigned = 1'b1;
+                end
+
+                3'b101: begin
+                    // LHU
+                    mem_size     = 2'b01;
                     mem_unsigned = 1'b1;
                 end
 
