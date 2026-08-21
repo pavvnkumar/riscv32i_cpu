@@ -189,7 +189,7 @@ module tb_cpu;
                 "SRL failed: x23 = %0d",
                 dut.register_file.registers[23]
             );
-        
+
         if (dut.register_file.registers[24] !== 32'd0)
             $fatal(
                 "SRA failed: x24 = %0d",
@@ -261,16 +261,16 @@ module tb_cpu;
         // ==============================
         // BLT not-taken
         // ==============================
-        
+
         @(posedge clk);
         #1;
-        
+
         if (pc !== 32'h00000064)
             $fatal(
                 "BLT not-taken failed: PC = %h",
                 pc
             );
-        
+
         $display(
             "BLT not taken: x6 < x7 is false, PC = %h",
             pc
@@ -388,7 +388,7 @@ module tb_cpu;
         @(posedge clk);
         #1;
 
-        
+
 
         if (pc !== 32'h0000008C)
             $fatal(
@@ -802,6 +802,19 @@ module tb_cpu;
             dut.register_file.registers[3]
         );
 
+        // ==============================
+        // FENCE
+        // ==============================
+
+        // FENCE at 0x128 should behave as a NOP
+        wait (dut.pc == 32'h0000012C);
+        #1;
+
+        $display(
+            "FENCE: PC advanced to %h",
+            dut.pc
+        );
+
         // ==========================
         // Passed
         // ==========================
@@ -852,7 +865,7 @@ module tb_cpu;
 
         $display("x21 = %0d  (SLTU FFFFFFFF < 5)",
                  dut.register_file.registers[21]);
-        
+
         $display("x22 = %0d  (SLL)",
                  dut.register_file.registers[22]);
 
@@ -861,7 +874,7 @@ module tb_cpu;
 
         $display("x24 = %0d  (SRA)",
                  dut.register_file.registers[24]);
-        
+
         $display("x5  = %0d  (LW)",
                  dut.register_file.registers[5]);
 

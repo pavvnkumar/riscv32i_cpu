@@ -554,6 +554,16 @@ module decoder (
 
         end
 
+        else if ((instruction[6:0] == 7'b0001111) &&
+                 (instruction[14:12] == 3'b000)) begin
+
+            // FENCE
+            // By default  reg_write, mem_write, branch, jump = 0
+
+            valid = 1'b1;
+
+        end
+
 
             end
 

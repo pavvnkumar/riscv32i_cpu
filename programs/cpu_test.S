@@ -249,3 +249,11 @@ jalr_target:
 
     # 0x124
     nop
+
+    # FENCE CPU test
+
+    # 0x128
+    fence
+
+    # 0x12C
+    nop

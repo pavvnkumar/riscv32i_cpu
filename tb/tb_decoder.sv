@@ -1452,6 +1452,37 @@ module tb_decoder;
             mem_unsigned
         );
 
+        // ========================================
+        // FENCE
+        // ========================================
+
+        instruction = 32'h0FF0000F;
+
+        #1;
+
+        if (valid !== 1'b1)
+            $fatal("FENCE valid failed");
+
+        if (reg_write !== 1'b0)
+            $fatal("FENCE reg_write should be 0");
+
+        if (mem_read !== 1'b0)
+            $fatal("FENCE mem_read should be 0");
+
+        if (mem_write !== 1'b0)
+            $fatal("FENCE mem_write should be 0");
+
+        if (branch !== 1'b0)
+            $fatal("FENCE branch should be 0");
+
+        if (jump !== 1'b0)
+            $fatal("FENCE jump should be 0");
+
+        if (jalr !== 1'b0)
+            $fatal("FENCE jalr should be 0");
+
+        $display("FENCE: valid=%b", valid);
+
 
 
         // =====================================================
